@@ -80,6 +80,7 @@ main{max-width:1200px;margin:0 auto;padding:28px 20px;}
 
 /* ── BUTTONS ── */
 .btn{padding:9px 18px;border-radius:8px;border:none;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;transition:.15s;display:inline-flex;align-items:center;gap:6px;}
+.btn:active{transform:scale(.97);}
 .btn-primary{background:var(--navy);color:white;}.btn-primary:hover{background:var(--navy2);}
 .btn-gold{background:var(--gold);color:white;}.btn-gold:hover{background:#b5832e;}
 .btn-sm{padding:5px 11px;font-size:11px;}
@@ -729,16 +730,6 @@ async function initDB(){
 // ── STORAGE — backed by Supabase ─────────────────────────────
 const STORAGE_KEYS={entries:'qm_entries',churches:'qm_churches',password:'qm_admin_pass',returns:'qm_cmf_returns'};
 
-// Entries
-async function loadEntries(){
-  try{ return await dbGet('qm_entries','order=created_at.desc'); }
-  catch(e){ console.warn('DB error, using localStorage',e); return JSON.parse(localStorage.getItem(STORAGE_KEYS.entries)||'[]'); }
-}
-async function saveEntries(entries){
-  // saveEntries is called with full array from old code — not used in new flow
-  // Individual add/delete handle DB directly
-}
-
 // Churches
 async function loadChurches(){
   try{
@@ -771,19 +762,16 @@ async function savePassword(p){
 }
 
 // Returns
-function loadUserReturns(){ return []; } // legacy, use loadReturnsDB
 async function loadReturnsDB(){
   try{ return await dbGet('qm_cmf_returns','order=date.asc'); }
   catch(e){ return JSON.parse(localStorage.getItem(STORAGE_KEYS.returns)||'[]'); }
 }
-async function saveReturns(){ /* handled by addReturn/deleteReturn directly */ }
 
 // Cashflow user entries
 async function loadCashflowEntries(){
   try{ return await dbGet('qm_cashflow_entries','order=date.asc').then(rows=>rows.map(r=>({...r,desc:r.description||r.desc||''}))); }
   catch(e){ return JSON.parse(localStorage.getItem('qm_cashflow')||'[]'); }
 }
-async function saveCashflowEntries(){ /* handled directly */ }
 
 function getAllData(){
   // returns HIST synchronously — user entries loaded async separately
@@ -1259,15 +1247,15 @@ function renderRemittanceTable(){
 }
 
 // ── MANAGE ───────────────────────────────────────────────────
-function renderManagePage(){
-  const churches=loadChurches();
-  document.getElementById('church-list').innerHTML=churches.map((c,i)=>`
+async function renderManagePage(){
+  const churches=await loadChurches();
+  document.getElementById('church-list').innerHTML=churches.length?churches.map(c=>`
     <div class="church-item">
       <span class="church-name">${c}</span>
       <div class="church-actions">
-        <button class="btn btn-sm btn-danger" onclick="removeChurch(${i})">✕</button>
+        <button class="btn btn-sm btn-danger" onclick="removeChurch('${c.replace(/'/g,"\\'")}')">✕</button>
       </div>
-    </div>`).join('');
+    </div>`).join(''):'<p style="color:var(--gray-400);font-size:12px;">No churches yet.</p>';
 }
 
 function openAddChurch(){
@@ -1287,7 +1275,7 @@ async function saveNewChurch(){
     await sb.post('qm_churches',{name});
     dbInvalidate('qm_churches');
     closeModal('church-modal');
-    renderManagePage();
+    await renderManagePage();
     populateChurchSelects();
     toast(`${name} added.`);
   }catch(e){toast('Save failed: '+e.message,'error');}
@@ -1299,7 +1287,7 @@ async function removeChurch(name){
   try{
     await fetch(`${SUPABASE_URL}/rest/v1/qm_churches?name=eq.${encodeURIComponent(name)}`,{method:'DELETE',headers:sb.headers});
     dbInvalidate('qm_churches');
-    renderManagePage();
+    await renderManagePage();
     populateChurchSelects();
     toast('Church removed.','error');
   }catch(e){toast('Remove failed: '+e.message,'error');}
@@ -1322,11 +1310,16 @@ async function changePassword(){
   document.getElementById('pw-confirm').value='';
 }
 
-function confirmClearUserEntries(){
+async function confirmClearUserEntries(){
+  if(!isHosted){toast('Cannot clear — open via a web server or Netlify.','error');return;}
   if(!confirm('This will delete ALL manually added entries. Historical data stays. Continue?')) return;
-  saveEntries([]);
-  renderEntryTable();
-  toast('User entries cleared.','error');
+  try{
+    await fetch(`${SUPABASE_URL}/rest/v1/qm_entries`, {method:'DELETE', headers:{...sb.headers,'Prefer':''}});
+    _userEntries=[];
+    dbInvalidate('qm_entries');
+    await renderAll();
+    toast('User entries cleared.','error');
+  }catch(e){toast('Clear failed: '+e.message,'error');}
 }
 
 function exportCSV(){

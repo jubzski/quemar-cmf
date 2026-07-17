@@ -53,13 +53,14 @@ body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--gray-800
 .bnav-btn{
   flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
   border:none;background:none;color:rgba(255,255,255,.45);cursor:pointer;
-  font-size:9px;font-weight:600;font-family:inherit;letter-spacing:.04em;text-transform:uppercase;
+  font-size:10px;font-weight:600;font-family:inherit;letter-spacing:.01em;
   transition:.15s;padding:4px 0;
   -webkit-tap-highlight-color:transparent;
 }
-.bnav-btn .icon{font-size:18px;line-height:1;}
+.bnav-btn .icon{font-size:18px;line-height:1;transition:transform .15s;}
 .bnav-btn:hover,.bnav-btn.active{color:var(--gold);}
 .bnav-btn.active .icon{filter:drop-shadow(0 0 4px rgba(200,149,58,.5));}
+.bnav-btn:active .icon{transform:scale(.88);}
 
 /* ── MAIN CONTENT ─────────────────────────────────────────── */
 main{max-width:700px;margin:0 auto;padding:16px 12px;}
@@ -150,7 +151,8 @@ td.total-row{font-weight:700;background:var(--gold-bg);font-size:11px;}
 .church-card-val{font-weight:700;color:var(--gray-800);}
 
 /* ── BUTTONS ──────────────────────────────────────────────── */
-.btn{padding:8px 14px;border-radius:8px;border:none;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;transition:.15s;display:inline-flex;align-items:center;gap:5px;}
+.btn{padding:8px 14px;border-radius:8px;border:none;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;transition:.15s;display:inline-flex;align-items:center;gap:5px;-webkit-tap-highlight-color:transparent;}
+.btn:active{transform:scale(.96);}
 .btn-gold{background:var(--gold);color:white;}.btn-gold:hover{background:#b5832e;}
 .btn-sm{padding:5px 10px;font-size:10px;}
 .btn-ghost{background:var(--gray-100);color:var(--gray-600);}.btn-ghost:hover{background:var(--gray-200);}
@@ -187,6 +189,12 @@ th.sort-desc::after{content:' ↓';opacity:1;color:var(--gold2);}
 
 /* ── SECTION DIVIDER ──────────────────────────────────────── */
 .section-label{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-400);margin:18px 0 8px;padding:0 2px;}
+
+/* ── SEGMENTED SUB-TABS ───────────────────────────────────── */
+.seg-tabs{display:flex;gap:4px;background:var(--gray-100);padding:3px;border-radius:10px;margin-bottom:14px;}
+.seg-tab{flex:1;text-align:center;padding:8px 0;border:none;background:none;border-radius:8px;font-size:11px;font-weight:700;color:var(--gray-500);cursor:pointer;font-family:inherit;transition:.15s;-webkit-tap-highlight-color:transparent;}
+.seg-tab.active{background:white;color:var(--navy);box-shadow:var(--shadow);}
+.seg-tab:active{transform:scale(.97);}
 
 /* ── MOBILE OPTIMIZATIONS ─────────────────────────────────── */
 @media(max-width:480px){
@@ -269,41 +277,47 @@ th.sort-desc::after{content:' ↓';opacity:1;color:var(--gold2);}
 
 <!-- CHURCHES -->
 <div id="page-churches" class="page">
-  <div class="card">
-    <div class="card-header">
-      <span class="card-title">All Churches</span>
-      <select id="ch-yr" onchange="renderChurchTable()" style="border:1.5px solid #e5e7eb;border-radius:6px;padding:4px 8px;font-size:10px;font-family:inherit;">
-        <option value="all">All Years</option>
-        <option>2021</option><option>2022</option><option>2023</option>
-        <option>2024</option><option>2025</option><option>2026</option>
-      </select>
-    </div>
-    <div class="table-wrap" id="church-table"></div>
+  <div class="seg-tabs">
+    <button class="seg-tab active" id="seg-overview" onclick="showChurchesTab('overview')">Overview</button>
+    <button class="seg-tab" id="seg-reports" onclick="showChurchesTab('reports')">Reports</button>
   </div>
-  <div class="section-label">Church Spotlight</div>
-  <div class="spotlight-grid" id="spotlight-grid"></div>
-</div>
 
-<!-- REPORTS -->
-<div id="page-reports" class="page">
-  <div class="card">
-    <div class="card-header">
-      <span class="card-title">Monthly Breakdown</span>
-      <div class="filter-row">
-        <select id="r-yr" onchange="renderReport()">
+  <div id="churches-tab-overview">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">All Churches</span>
+        <select id="ch-yr" onchange="renderChurchTable()" style="border:1.5px solid #e5e7eb;border-radius:6px;padding:4px 8px;font-size:10px;font-family:inherit;">
           <option value="all">All Years</option>
           <option>2021</option><option>2022</option><option>2023</option>
           <option>2024</option><option>2025</option><option>2026</option>
         </select>
-        <select id="r-ch" onchange="renderReport()"><option value="all">All Churches</option></select>
-        <button class="btn btn-sm btn-gold" onclick="exportCSV()">⬇ CSV</button>
       </div>
+      <div class="table-wrap" id="church-table"></div>
     </div>
-    <div class="table-wrap" id="report-table"></div>
+    <div class="section-label">Church Spotlight</div>
+    <div class="spotlight-grid" id="spotlight-grid"></div>
   </div>
-  <div class="card">
-    <div class="card-header"><span class="card-title">Year Summary</span></div>
-    <div class="table-wrap" id="year-summary-table"></div>
+
+  <div id="churches-tab-reports" style="display:none;">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Monthly Breakdown</span>
+        <div class="filter-row">
+          <select id="r-yr" onchange="renderReport()">
+            <option value="all">All Years</option>
+            <option>2021</option><option>2022</option><option>2023</option>
+            <option>2024</option><option>2025</option><option>2026</option>
+          </select>
+          <select id="r-ch" onchange="renderReport()"><option value="all">All Churches</option></select>
+          <button class="btn btn-sm btn-gold" onclick="exportCSV()">⬇ CSV</button>
+        </div>
+      </div>
+      <div class="table-wrap" id="report-table"></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">Year Summary</span></div>
+      <div class="table-wrap" id="year-summary-table"></div>
+    </div>
   </div>
 </div>
 
@@ -401,9 +415,6 @@ th.sort-desc::after{content:' ↓';opacity:1;color:var(--gold2);}
   <button class="bnav-btn" onclick="showPage('churches')" id="bnav-churches">
     <span class="icon">⛪</span>Churches
   </button>
-  <button class="bnav-btn" onclick="showPage('reports')" id="bnav-reports">
-    <span class="icon">📋</span>Reports
-  </button>
   <button class="bnav-btn" onclick="showPage('returns')" id="bnav-returns">
     <span class="icon">📥</span>Returns
   </button>
@@ -415,9 +426,6 @@ th.sort-desc::after{content:' ↓';opacity:1;color:var(--gold2);}
 <div id="toast"></div>
 
 <script>
-// ── OVERRIDE showPage to use bottom nav ───────────────────────
-const _origShowPage = showPage;
-
 // ── DATA (same HIST as admin) ──────────────────────────────
 const HIST = [
   {year:'2021',month:'JAN',church:'SCBC Main',amount:3170.40,remitted:1},{year:'2021',month:'JAN',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2021',month:'JAN',church:'SCBC Janagdong',amount:100.00,remitted:1},{year:'2021',month:'JAN',church:'LCBC',amount:3000.00,remitted:1},{year:'2021',month:'JAN',church:'JSTCF',amount:1300.00,remitted:1},{year:'2021',month:'JAN',church:'JLM',amount:6811.70,remitted:1},{year:'2021',month:'JAN',church:'CCBC Bonliw',amount:326.60,remitted:1},{year:'2021',month:'JAN',church:'CCBC Balogo',amount:518.50,remitted:1},
@@ -604,7 +612,7 @@ async function showPage(p){
   document.getElementById('page-'+p).classList.add('active');
   document.querySelector(`nav button[onclick="showPage('${p}')"]`).classList.add('active');
   // Refresh DB data when switching to data tabs
-  if(p==='returns'||p==='cashflow'||p==='reports'){
+  if(p==='churches'||p==='returns'||p==='cashflow'){
     try{
       const [e,r,c]=await Promise.all([
         dbGet('qm_entries','order=created_at.desc',0),
@@ -616,7 +624,6 @@ async function showPage(p){
   }
   if(p==='dashboard') renderDashboard();
   if(p==='churches') renderChurchesPage();
-  if(p==='reports'){ populateReportFilters(); renderReport(); }
   if(p==='returns'){ renderReturnsPage(); }
   if(p==='cashflow') renderCashflowPage();
 }
@@ -733,6 +740,15 @@ function renderDonut(){
 function renderChurchesPage(){
   renderChurchTable();
   renderSpotlight();
+  populateReportFilters();
+  renderReport();
+}
+
+function showChurchesTab(t){
+  document.getElementById('seg-overview').classList.toggle('active', t==='overview');
+  document.getElementById('seg-reports').classList.toggle('active', t==='reports');
+  document.getElementById('churches-tab-overview').style.display = t==='overview'?'':'none';
+  document.getElementById('churches-tab-reports').style.display = t==='reports'?'':'none';
 }
 
 function renderChurchTable(){
@@ -847,7 +863,7 @@ function renderReport(){
   // Year summary
   const years=['2021','2022','2023','2024','2025','2026'];
   document.getElementById('year-summary-table').innerHTML=`<table id='year-summary-inner'>
-    <thead><tr><th class='sortable' onclick="sortTable('year-summary-inner',0)">Year</th><th class='sortable' onclick="sortTable('year-summary-inner',1)">Contributions</th><th class='sortable' onclick="sortTable('year-summary-inner',2)">CMF 30% Received</th></tr></thead>
+    <thead><tr><th class='sortable' onclick="sortTable('year-summary-inner',0)">Year</th><th class='sortable' onclick="sortTable('year-summary-inner',1)">Contributions</th><th class='sortable' onclick="sortTable('year-summary-inner',2)">CMF 30% Expected</th><th class='sortable' onclick="sortTable('year-summary-inner',3)">CMF 30% Received</th></tr></thead>
     <tbody>${years.map(y=>{
       const yData=data.filter(d=>d.year===y);
       const tot=yData.reduce((s,d)=>s+d.amount,0);
@@ -912,13 +928,13 @@ function renderReturnsList(){
     <td class="num" style="color:#16a34a;font-weight:700">${fmtN(r.amount)}</td>
     <td style="font-size:11px;color:#6b7280">${r.notes||'—'}</td>
     <td style="font-size:11px;color:#6b7280">${r.ref||'—'}</td>
-  </tr>`).join(''):`<tr><td colspan="6" style="text-align:center;padding:28px;color:#9ca3af;">No CMF return entries have been recorded yet. The admin/treasurer records these after each receipt from CBAP.</td></tr>`;
+  </tr>`).join(''):`<tr><td colspan="4" style="text-align:center;padding:28px;color:#9ca3af;">No CMF return entries have been recorded yet. The admin/treasurer records these after each receipt from CBAP.</td></tr>`;
 
   const total=returns.reduce((s,r)=>s+r.amount,0);
   document.getElementById('ret-list-table').innerHTML=`<table id='ret-list-inner'>
     <thead><tr><th class='sortable' onclick="sortTable('ret-list-inner',0)">Date Received</th><th class='sortable' onclick="sortTable('ret-list-inner',1)">Amount (₱)</th><th class='sortable' onclick="sortTable('ret-list-inner',2)">Notes / Description</th><th class='sortable' onclick="sortTable('ret-list-inner',3)">Ref / OR No.</th></tr></thead>
     <tbody>${tbody}</tbody>
-    ${returns.length?`<tfoot><tr><td colspan="2" class="total-row"><strong>TOTAL</strong></td><td class="num total-row" style="color:#16a34a;"><strong>${fmtN(total)}</strong></td><td colspan="3" class="total-row"></td></tr></tfoot>`:''}
+    ${returns.length?`<tfoot><tr><td class="total-row"><strong>TOTAL</strong></td><td class="num total-row" style="color:#16a34a;"><strong>${fmtN(total)}</strong></td><td colspan="2" class="total-row"></td></tr></tfoot>`:''}
   </table>`;
 }
 
