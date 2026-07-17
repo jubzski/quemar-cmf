@@ -1,0 +1,12 @@
+{
+  "name": "quemar-cmf",
+  "version": "1.0.0",
+  "private": true,
+  "description": "QueMar CMF Tracker — church view (mobile) and admin portal (desktop)",
+  "scripts": {
+    "start": "serve -l $PORT ."
+  },
+  "dependencies": {
+    "serve": "^14.2.3"
+  }
+}

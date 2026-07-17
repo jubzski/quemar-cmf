@@ -22,7 +22,30 @@ No build step — it's static HTML/CSS/JS. Serve the folder with any static file
 python3 -m http.server 8080
 ```
 
+or via the npm script (same server used in production, see below):
+
+```bash
+npm install
+PORT=8080 npm start
+```
+
 Then open `http://localhost:8080/index.html` (church view) or `http://localhost:8080/admin.html` (admin).
+
+## Deploying to Railway
+
+The repo is set up to deploy as-is:
+
+- `package.json` installs [`serve`](https://www.npmjs.com/package/serve) and runs it on Railway's `$PORT`.
+- `serve.json` disables `serve`'s default clean-URL redirects, so `/admin.html` and `/index.html` are served at their real paths (matching the links already in the pages) instead of 301-redirecting to `/admin` / `/index`.
+- `railway.json` pins the Nixpacks builder and start command explicitly.
+
+Steps:
+
+1. Push this repo to GitHub (already done if you're reading this from the repo).
+2. On [railway.app](https://railway.app), **New Project → Deploy from GitHub repo**, and authorize/select `jubzski/quemar-cmf`.
+3. Pick the branch to deploy. Railway will detect `package.json`, run `npm install`, then `npm start`.
+4. Once deployed, Railway assigns a `*.up.railway.app` domain automatically (or add a custom domain under the service's **Settings → Networking**). The public site is the domain root (`index.html`); the admin portal is `/admin.html` on the same domain.
+5. No environment variables are required — the Supabase URL/anon key are already embedded in the HTML (see the Security note below for what that means).
 
 ## Security note
 
