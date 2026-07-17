@@ -1,0 +1,1970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QueMar CMF – Admin</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Libre+Baskerville:wght@700&display=swap');
+:root{
+  --navy:#1a2744;--navy2:#243460;--gold:#c8953a;--cream:#faf8f4;
+  --gray-50:#f9fafb;--gray-100:#f3f4f6;--gray-200:#e5e7eb;
+  --gray-400:#9ca3af;--gray-500:#6b7280;--gray-600:#4b5563;--gray-800:#1f2937;
+  --green:#16a34a;--green-bg:#dcfce7;--red:#dc2626;--red-bg:#fee2e2;
+  --blue:#2563eb;--blue-bg:#dbeafe;--yellow:#d97706;--yellow-bg:#fef3c7;
+  --shadow:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);
+  --shadow-md:0 4px 6px rgba(0,0,0,.07),0 2px 4px rgba(0,0,0,.05);
+  --radius:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--gray-800);min-height:100vh;}
+
+/* ── LOGIN ── */
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--navy);}
+.login-box{background:white;border-radius:16px;padding:40px 36px;width:360px;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+.login-logo{display:flex;align-items:center;gap:12px;margin-bottom:28px;}
+.login-logo-icon{width:44px;height:44px;background:var(--gold);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Libre Baskerville',serif;font-weight:700;font-size:16px;color:var(--navy);}
+.login-logo-text{font-size:17px;font-weight:700;color:var(--navy);}
+.login-logo-sub{font-size:11px;color:var(--gray-400);}
+.login-label{font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:6px;display:block;}
+.login-input{width:100%;border:1.5px solid var(--gray-200);border-radius:8px;padding:11px 13px;font-size:14px;font-family:inherit;outline:none;transition:.15s;}
+.login-input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(200,149,58,.12);}
+.login-btn{width:100%;margin-top:20px;background:var(--navy);color:white;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;transition:.15s;}
+.login-btn:hover{background:var(--navy2);}
+.login-err{color:var(--red);font-size:12px;margin-top:8px;display:none;}
+.login-hint{font-size:11px;color:var(--gray-400);margin-top:16px;text-align:center;}
+
+/* ── APP ── */
+#app{display:none;}
+header{background:var(--navy);color:white;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:100;box-shadow:var(--shadow-md);}
+.hbrand{display:flex;align-items:center;gap:12px;}
+.hlogo{width:36px;height:36px;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Libre Baskerville',serif;font-weight:700;font-size:14px;color:var(--navy);}
+.htitle{font-size:15px;font-weight:600;}
+.hsub{font-size:11px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.05em;}
+.hright{display:flex;align-items:center;gap:8px;}
+.admin-badge{background:var(--gold);color:var(--navy);font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;letter-spacing:.05em;text-transform:uppercase;}
+.logout-btn{background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.75);padding:7px 13px;border-radius:6px;cursor:pointer;font-size:12px;font-family:inherit;transition:.15s;}
+.logout-btn:hover{background:rgba(255,255,255,.2);color:white;}
+
+nav{display:flex;gap:2px;background:rgba(255,255,255,.07);padding:4px;border-radius:8px;}
+nav button{background:none;border:none;color:rgba(255,255,255,.65);padding:7px 13px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:500;font-family:inherit;transition:.15s;white-space:nowrap;}
+nav button:hover{background:rgba(255,255,255,.1);color:white;}
+nav button.active{background:var(--gold);color:var(--navy);font-weight:700;}
+
+main{max-width:1200px;margin:0 auto;padding:28px 20px;}
+.page{display:none;}.page.active{display:block;}
+.section-title{font-family:'Libre Baskerville',serif;font-size:20px;color:var(--navy);margin-bottom:20px;}
+
+/* ── CARDS ── */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:24px;}
+.stat-card{background:white;border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);border-left:4px solid var(--gold);}
+.stat-card.blue{border-left-color:var(--blue);}
+.stat-card.green{border-left-color:var(--green);}
+.stat-card.red{border-left-color:var(--red);}
+.stat-label{font-size:10px;font-weight:700;color:var(--gray-400);letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px;}
+.stat-value{font-size:22px;font-weight:800;color:var(--gray-800);line-height:1;}
+.stat-sub{font-size:11px;color:var(--gray-400);margin-top:4px;}
+
+.card{background:white;border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:20px;overflow:hidden;}
+.card-header{padding:16px 20px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.card-title{font-size:13px;font-weight:700;color:var(--gray-800);}
+.card-body{padding:20px;}
+
+/* ── FORM ── */
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;}
+.form-group{display:flex;flex-direction:column;gap:5px;}
+.form-group label{font-size:11px;font-weight:700;color:var(--gray-600);letter-spacing:.03em;text-transform:uppercase;}
+.form-group input,.form-group select{border:1.5px solid var(--gray-200);border-radius:8px;padding:10px 12px;font-size:13px;font-family:inherit;color:var(--gray-800);background:white;outline:none;transition:.15s;}
+.form-group input:focus,.form-group select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(200,149,58,.12);}
+.form-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;align-items:center;}
+
+/* ── BUTTONS ── */
+.btn{padding:9px 18px;border-radius:8px;border:none;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;transition:.15s;display:inline-flex;align-items:center;gap:6px;}
+.btn-primary{background:var(--navy);color:white;}.btn-primary:hover{background:var(--navy2);}
+.btn-gold{background:var(--gold);color:white;}.btn-gold:hover{background:#b5832e;}
+.btn-sm{padding:5px 11px;font-size:11px;}
+.btn-ghost{background:var(--gray-100);color:var(--gray-600);}.btn-ghost:hover{background:var(--gray-200);}
+.btn-danger{background:var(--red-bg);color:var(--red);}.btn-danger:hover{background:#fecaca;}
+.btn-success{background:var(--green-bg);color:var(--green);}.btn-success:hover{background:#bbf7d0;}
+
+/* ── TABLE ── */
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+th{background:var(--navy);color:white;padding:9px 12px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;}
+td{padding:9px 12px;border-bottom:1px solid var(--gray-100);white-space:nowrap;vertical-align:middle;}
+tr:hover td{background:#f8faff;}
+tr:last-child td{border-bottom:none;}
+td.num{text-align:right;font-variant-numeric:tabular-nums;}
+td.total-row{font-weight:700;background:#fef9f0;}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.badge-remitted{background:var(--green-bg);color:var(--green);}
+.badge-pending{background:var(--yellow-bg);color:var(--yellow);}
+.badge-gold{background:var(--yellow-bg);color:#92400e;}
+.badge-blue{background:var(--blue-bg);color:#1e40af;}
+
+/* ── FILTER ROW ── */
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.filter-row select,.filter-row input{border:1.5px solid var(--gray-200);border-radius:7px;padding:7px 11px;font-size:12px;font-family:inherit;outline:none;background:white;}
+.filter-row select:focus,.filter-row input:focus{border-color:var(--gold);}
+
+/* ── TOGGLE REMITTED ── */
+.remit-toggle{display:flex;align-items:center;gap:6px;cursor:pointer;padding:5px 10px;border-radius:6px;border:1.5px solid var(--gray-200);background:white;font-size:11px;font-weight:600;font-family:inherit;transition:.15s;}
+.remit-toggle.remitted{border-color:var(--green);background:var(--green-bg);color:var(--green);}
+.remit-toggle.pending{border-color:#d97706;background:var(--yellow-bg);color:#92400e;}
+.remit-toggle:hover{opacity:.85;}
+
+/* ── CHURCH LIST ── */
+.church-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;}
+.church-item{border:1.5px solid var(--gray-200);border-radius:8px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:white;}
+.church-name{font-size:13px;font-weight:600;color:var(--gray-800);}
+.church-actions{display:flex;gap:6px;}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:white;padding:11px 18px;border-radius:9px;font-size:12px;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.15);transform:translateY(60px);opacity:0;transition:.3s;z-index:999;}
+#toast.show{transform:translateY(0);opacity:1;}
+#toast.success{border-left:4px solid var(--green);}
+#toast.error{border-left:4px solid var(--red);}
+
+/* ── CHART ── */
+.chart-wrap{display:flex;align-items:flex-end;gap:6px;height:180px;padding-bottom:24px;}
+.bar-group{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;height:100%;justify-content:flex-end;}
+.bar{width:100%;border-radius:4px 4px 0 0;min-height:4px;transition:.2s;cursor:default;}
+.bar-label{font-size:10px;color:var(--gray-400);font-weight:500;}
+.bar-val{font-size:10px;font-weight:700;color:var(--gray-600);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:640px){
+  nav button span{display:none;}
+  header{padding:0 12px;}
+  main{padding:16px 12px;}
+}
+
+/* ── MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:white;border-radius:14px;width:460px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,.2);overflow:hidden;}
+.modal-header{padding:18px 22px;border-bottom:1px solid var(--gray-100);display:flex;justify-content:space-between;align-items:center;}
+.modal-title{font-size:14px;font-weight:700;color:var(--navy);}
+.modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--gray-400);line-height:1;}
+.modal-body{padding:22px;}
+.modal-footer{padding:14px 22px;border-top:1px solid var(--gray-100);display:flex;justify-content:flex-end;gap:8px;}
+
+/* ── TABLE SORT ── */
+th.sortable { cursor:pointer; user-select:none; white-space:nowrap; }
+th.sortable::after { content:' ⇅'; opacity:.35; font-size:10px; }
+th.sort-asc::after  { content:' ↑'; opacity:1; color:var(--gold-light,#f0c878); }
+th.sort-desc::after { content:' ↓'; opacity:1; color:var(--gold-light,#f0c878); }
+th.sortable:hover { opacity:.85; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-logo-icon">QM</div>
+      <div>
+        <div class="login-logo-text">QueMar CMF</div>
+        <div class="login-logo-sub">Admin Portal</div>
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:14px;">
+      <label class="login-label">Username</label>
+      <input class="login-input" id="l-user" type="text" placeholder="admin" autocomplete="username">
+    </div>
+    <div class="form-group">
+      <label class="login-label">Password</label>
+      <input class="login-input" id="l-pass" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="login-btn" onclick="doLogin()">Sign In</button>
+    <div class="login-err" id="login-err">Incorrect username or password.</div>
+    <div class="login-hint">Default: admin / quemar2024</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+<header>
+  <div class="hbrand">
+    <div class="hlogo">QM</div>
+    <div>
+      <div class="htitle">QueMar CMF Tracker</div>
+      <div class="hsub">Quezon Marinduque Region · CBAP</div>
+    </div>
+  </div>
+  <nav>
+    <button class="active" onclick="showPage('dashboard')">📊 <span>Dashboard</span></button>
+    <button onclick="showPage('entry')">➕ <span>Contributions</span></button>
+    <button onclick="showPage('remittance')">📤 <span>Remittance</span></button>
+    <button onclick="showPage('returns')">📥 <span>CMF Returns</span></button>
+    <button onclick="showPage('cashflow')">💰 <span>Cash Flow</span></button>
+    <button onclick="showPage('manage')">⚙️ <span>Manage</span></button>
+  </nav>
+  <div class="hright">
+    <a href="index.html" class="logout-btn" style="text-decoration:none;">🏠 View Public Site</a>
+    <span class="admin-badge">Admin</span>
+    <button class="logout-btn" onclick="doLogout()">Sign out</button>
+  </div>
+</header>
+
+<main>
+
+<!-- DASHBOARD -->
+<div id="page-dashboard" class="page active">
+  <div class="section-title">Admin Dashboard</div>
+  <div class="stat-grid" id="a-stat-grid"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px;" id="dash-top">
+    <div class="card">
+      <div class="card-header"><span class="card-title">Annual Contributions</span><span class="badge badge-gold">2021–2026</span></div>
+      <div class="card-body"><div class="chart-wrap" id="a-annual-chart"></div></div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">CMF Sent to CBAP</span>
+        <select id="remit-year-filter" onchange="renderRemitDonut()" style="border:1.5px solid #e5e7eb;border-radius:6px;padding:5px 9px;font-size:11px;font-family:inherit;">
+          <option value="all">All Years</option>
+          <option>2021</option><option>2022</option><option>2023</option>
+          <option>2024</option><option>2025</option><option>2026</option>
+        </select>
+      </div>
+      <div class="card-body" id="remit-status-panel"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Recent Entries</span>
+      <button class="btn btn-sm btn-gold" onclick="showPage('entry')">+ Add Entry</button>
+    </div>
+    <div class="table-wrap" id="a-recent-table"></div>
+  </div>
+</div>
+
+<!-- ADD ENTRY -->
+<div id="page-entry" class="page">
+  <div class="section-title">Church Contributions</div>
+  <div class="card" style="max-width:760px;">
+    <div class="card-header"><span class="card-title">New Entry</span></div>
+    <div class="card-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Year</label>
+          <select id="f-year">
+            <option>2021</option><option>2022</option><option>2023</option>
+            <option>2024</option><option>2025</option><option selected>2026</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Month</label>
+          <select id="f-month">
+            <option value="JAN">January</option><option value="FEB">February</option>
+            <option value="MAR">March</option><option value="APR">April</option>
+            <option value="MAY">May</option><option value="JUN">June</option>
+            <option value="JUL">July</option><option value="AUG">August</option>
+            <option value="SEP">September</option><option value="OCT">October</option>
+            <option value="NOV">November</option><option value="DEC">December</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Church</label>
+          <select id="f-church"></select>
+        </div>
+        <div class="form-group">
+          <label>Amount (₱)</label>
+          <input type="number" id="f-amount" placeholder="0.00" min="0" step="0.01">
+        </div>
+        <div class="form-group">
+          <label>Notes (optional)</label>
+          <input type="text" id="f-notes" placeholder="e.g. Special offering">
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select id="f-remitted">
+            <option value="0">⏳ Not Yet Sent</option>
+            <option value="1">✅ Sent to CBAP</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <button class="btn btn-primary" onclick="addEntry()">➕ Save Entry</button>
+        <button class="btn btn-ghost" onclick="clearEntryForm()">Clear</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="max-width:760px;">
+    <div class="card-header">
+      <span class="card-title">All Entries</span>
+      <div class="filter-row">
+        <select id="et-year" onchange="renderEntryTable()">
+          <option value="all">All Years</option>
+          <option>2021</option><option>2022</option><option>2023</option>
+          <option>2024</option><option>2025</option><option>2026</option>
+        </select>
+        <select id="et-church" onchange="renderEntryTable()">
+          <option value="all">All Churches</option>
+        </select>
+      </div>
+    </div>
+    <div class="table-wrap" id="entry-table"></div>
+  </div>
+</div>
+
+<!-- REMITTANCE -->
+<div id="page-remittance" class="page">
+  <div class="section-title">CMF Sent to CBAP (100%)</div>
+  <div class="stat-grid" id="remit-stats"></div>
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Remittance by Month</span>
+      <div class="filter-row">
+        <select id="rem-year" onchange="renderRemittanceTable()">
+          <option value="all">All Years</option>
+          <option>2021</option><option>2022</option><option>2023</option>
+          <option>2024</option><option>2025</option><option>2026</option>
+        </select>
+        <button class="btn btn-sm btn-gold" onclick="exportCSV()">⬇ Export CSV</button>
+      </div>
+    </div>
+    <div class="table-wrap" id="remittance-table"></div>
+  </div>
+</div>
+
+<!-- CMF RETURNS -->
+<div id="page-returns" class="page">
+  <div class="section-title">CMF 30% Returns from CBAP</div>
+  <div style="background:#dbeafe;border-left:4px solid #2563eb;border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:12px;color:#1e40af;">
+    <strong>CMF 30% Returns from CBAP:</strong> You collect 100% of CMF from member churches and send the full amount to CBAP. CBAP returns 30% back to QueMar as the regional fund. All historical deposits are pre-loaded. Add new entries as you receive them.
+  </div>
+  <div class="card" style="border-left:4px solid #7c3aed;margin-bottom:20px;">
+    <div class="card-header"><span class="card-title" style="color:#7c3aed;">📋 Opening Balance</span><span class="badge" style="background:#ede9fe;color:#7c3aed;">From Previous Treasurer</span></div>
+    <div class="card-body" id="fwd-balance-panel"></div>
+  </div>
+
+  <div class="card" style="max-width:760px;">
+    <div class="card-header"><span class="card-title">Record CMF Return from CBAP</span></div>
+    <div class="card-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Date Received</label>
+          <input type="date" id="r-date" style="border:1.5px solid var(--gray-200);border-radius:8px;padding:10px 12px;font-size:13px;font-family:inherit;outline:none;width:100%;" onchange="autoFillReturnDate()">
+        </div>
+        <div class="form-group">
+          <label>Year</label>
+          <select id="r-year">
+            <option>2021</option><option>2022</option><option>2023</option>
+            <option>2024</option><option>2025</option><option selected>2026</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Month Received</label>
+          <select id="r-month">
+            <option value="JAN">January</option><option value="FEB">February</option>
+            <option value="MAR">March</option><option value="APR">April</option>
+            <option value="MAY">May</option><option value="JUN">June</option>
+            <option value="JUL">July</option><option value="AUG">August</option>
+            <option value="SEP">September</option><option value="OCT">October</option>
+            <option value="NOV">November</option><option value="DEC">December</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Amount Received from CBAP (₱)</label>
+          <input type="number" id="r-amount" placeholder="0.00" min="0" step="0.01">
+        </div>
+        <div class="form-group">
+          <label>Reference / OR No. (optional)</label>
+          <input type="text" id="r-ref" placeholder="e.g. OR-2024-001">
+        </div>
+        <div class="form-group">
+          <label>Notes (optional)</label>
+          <input type="text" id="r-notes" placeholder="e.g. Via bank transfer">
+        </div>
+        <div class="form-group">
+          <label>Type</label>
+          <select id="r-type">
+            <option value="cbap">CMF 30% from CBAP</option>
+            <option value="forwarded">Forwarded Balance</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Corresponding CMF Period (for reference)</label>
+          <input type="text" id="r-period" placeholder="e.g. Jan–Jun 2024">
+        </div>
+      </div>
+      <div class="form-row">
+        <button class="btn btn-primary" onclick="addReturn()">📥 Save Return Entry</button>
+        <button class="btn btn-ghost" onclick="clearReturnForm()">Clear</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="ret-fwd-admin" style="margin-bottom:0;"></div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:20px;" id="ret-stats"></div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">CMF Returns Ledger</span>
+      <div class="filter-row">
+        <select id="ret-year-filter" onchange="renderReturnsTable()">
+          <option value="all">All Years</option>
+          <option>2021</option><option>2022</option><option>2023</option>
+          <option>2024</option><option>2025</option><option>2026</option>
+        </select>
+        <button class="btn btn-sm btn-gold" onclick="exportReturnsCSV()">⬇ Export CSV</button>
+      </div>
+    </div>
+    <div class="table-wrap" id="returns-table"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">CMF Returns vs Expected — by Year</span>
+      <span class="badge badge-blue">30% of total contributions</span>
+    </div>
+    <div class="table-wrap" id="returns-summary-table"></div>
+  </div>
+</div>
+
+
+
+<!-- CASHFLOW -->
+<div id="page-cashflow" class="page">
+  <div class="section-title">QueMar Fund Cashflow</div>
+
+  <!-- Summary stats -->
+  <div class="stat-grid" id="cf-stat-grid" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr));"></div>
+
+  <!-- Top row: category bars + donut -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px;" id="cf-top-grid">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Spending by Category</span>
+        <span class="badge badge-gold">Outflows only</span>
+      </div>
+      <div class="card-body" id="cf-cat-bars"></div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Category Distribution</span>
+      </div>
+      <div class="card-body">
+        <div class="donut-wrap">
+          <svg id="cf-donut-svg" width="150" height="150" viewBox="0 0 150 150"></svg>
+          <div class="donut-legend" id="cf-donut-legend"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Category summary table -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-header">
+      <span class="card-title">Category Summary</span>
+      <span class="badge badge-blue" id="cf-cat-period-label">All Years</span>
+    </div>
+    <div class="table-wrap" id="cf-cat-table"></div>
+  </div>
+
+  <!-- Annual bar chart -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-header"><span class="card-title">Annual Spending by Category vs Inflows</span></div>
+    <div class="card-body" style="position:relative;"><div class="chart-wrap" id="cf-bar-chart"></div></div>
+  </div>
+
+  <!-- Transaction ledger -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Transaction Ledger</span>
+      <div class="filter-row">
+        <select id="cf-yr" onchange="renderCashflowTable()">
+          <option value="all">All Years</option>
+          <option>2021</option><option>2022</option><option>2023</option>
+          <option>2024</option><option>2025</option><option>2026</option>
+        </select>
+        <select id="cf-type" onchange="renderCashflowTable()">
+          <option value="all">All Types</option>
+          <option value="in">Inflows Only</option>
+          <option value="out">Outflows Only</option>
+        </select>
+        <select id="cf-cat" onchange="renderCashflowTable()">
+          <option value="all">All Categories</option>
+          <option>Church Planting</option>
+          <option>Church Development</option>
+          <option>Training & Seminars</option>
+          <option>Transformation</option>
+          <option>Benevolence Fund</option>
+          <option>Scholarship Fund</option>
+          <option>Operating Expenses</option>
+          <option>General Fund</option>
+        </select>
+        <button class="btn btn-sm btn-ghost" onclick="clearCashflowFilters()">Clear</button>
+        <button class="btn btn-sm btn-gold" onclick="exportCashflowCSV()">⬇ Export CSV</button>
+      </div>
+    </div>
+    <div class="table-wrap" id="cf-ledger-table"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Add New Cashflow Entry</span>
+      <span class="badge badge-blue">Admin only</span>
+    </div>
+    <div class="card-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" id="cf-date">
+        </div>
+        <div class="form-group">
+          <label>Type</label>
+          <select id="cf-entry-type" onchange="updateCfAmountSign()">
+            <option value="in">📥 Inflow</option>
+            <option value="out">📤 Outflow</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Amount (₱)</label>
+          <input type="number" id="cf-amount" placeholder="0.00" min="0" step="0.01">
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select id="cf-entry-cat">
+            <option>Church Planting</option>
+            <option>Church Development</option>
+            <option>Training & Seminars</option>
+            <option>Transformation</option>
+            <option>Benevolence Fund</option>
+            <option>Scholarship Fund</option>
+            <option>Operating Expenses</option>
+            <option>General Fund</option>
+          </select>
+        </div>
+        <div class="form-group" style="grid-column:span 2;">
+          <label>Description</label>
+          <input type="text" id="cf-desc" placeholder="e.g. Cash deposit from CBAP">
+        </div>
+      </div>
+      <div class="form-row" style="margin-top:14px;">
+        <button class="btn btn-primary" onclick="addCashflowEntry()">➕ Add Entry</button>
+        <button class="btn btn-ghost" onclick="clearCashflowForm()">Clear</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MANAGE -->
+<div id="page-manage" class="page">
+  <div class="section-title">Manage Settings</div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Church List</span>
+        <button class="btn btn-sm btn-primary" onclick="openAddChurch()">+ Add Church</button>
+      </div>
+      <div class="card-body">
+        <div class="church-list" id="church-list"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-title">Change Admin Password</span></div>
+      <div class="card-body">
+        <div class="form-group" style="margin-bottom:12px;">
+          <label>Current Password</label>
+          <input type="password" id="pw-current" class="form-group input" style="border:1.5px solid var(--gray-200);border-radius:8px;padding:10px 12px;font-size:13px;font-family:inherit;outline:none;width:100%;">
+        </div>
+        <div class="form-group" style="margin-bottom:12px;">
+          <label>New Password</label>
+          <input type="password" id="pw-new" style="border:1.5px solid var(--gray-200);border-radius:8px;padding:10px 12px;font-size:13px;font-family:inherit;outline:none;width:100%;">
+        </div>
+        <div class="form-group" style="margin-bottom:16px;">
+          <label>Confirm New Password</label>
+          <input type="password" id="pw-confirm" style="border:1.5px solid var(--gray-200);border-radius:8px;padding:10px 12px;font-size:13px;font-family:inherit;outline:none;width:100%;">
+        </div>
+        <button class="btn btn-primary" onclick="changePassword()">Update Password</button>
+        <div id="pw-msg" style="font-size:12px;margin-top:8px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:0;">
+    <div class="card-header"><span class="card-title">Data Management</span></div>
+    <div class="card-body" style="display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="btn btn-gold" onclick="exportAllCSV()">⬇ Export All Data (CSV)</button>
+      <button class="btn btn-gold" onclick="exportReturnsCSV()">⬇ Export CMF Returns (CSV)</button>
+      <button class="btn btn-danger" onclick="confirmClearUserEntries()">🗑 Clear User-Added Entries</button>
+    </div>
+  </div>
+</div>
+
+</main>
+</div><!-- /app -->
+
+<!-- ADD CHURCH MODAL -->
+<div class="modal-overlay" id="church-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Add New Church</span>
+      <button class="modal-close" onclick="closeModal('church-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Church Name / Abbreviation</label>
+        <input type="text" id="new-church-name" style="border:1.5px solid var(--gray-200);border-radius:8px;padding:10px 12px;font-size:13px;font-family:inherit;outline:none;width:100%;margin-top:4px;" placeholder="e.g. CCBC Sampaloc">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('church-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveNewChurch()">Add Church</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ── CONSTANTS ──────────────────────────────────────────────
+const MONTHS=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+const MONTH_FULL={JAN:'January',FEB:'February',MAR:'March',APR:'April',MAY:'May',JUN:'June',JUL:'July',AUG:'August',SEP:'September',OCT:'October',NOV:'November',DEC:'December'};
+const CMF_RATE=0.30;
+
+// CMF 30% deposits received from CBAP
+// Historical CMF 30% deposits received from CBAP (from QueMar cash flow records)
+const HIST_RETURNS = [
+  {id:'hr2',  date:'2023-05-08', year:'2023', month:'MAY', amount:23982.05, ref:'', period:'2021–2022', notes:'Cash deposit from CBAP'},
+  {id:'hr3',  date:'2023-06-09', year:'2023', month:'JUN', amount:22185.50, ref:'', period:'2021–2022', notes:'Cash deposit from CBAP'},
+  {id:'hr4',  date:'2024-01-12', year:'2024', month:'JAN', amount:19559.69, ref:'', period:'2023',      notes:'Cash deposit from CBAP'},
+  {id:'hr5',  date:'2024-03-01', year:'2024', month:'MAR', amount:2139.50,  ref:'', period:'2023',      notes:'Cash deposit from CBAP'},
+  {id:'hr6',  date:'2024-05-28', year:'2024', month:'MAY', amount:5052.70,  ref:'', period:'2023',      notes:'Cash deposit from CBAP'},
+  {id:'hr7',  date:'2024-07-19', year:'2024', month:'JUL', amount:2009.50,  ref:'', period:'2024',      notes:'Cash deposit from CBAP'},
+  {id:'hr8',  date:'2024-09-23', year:'2024', month:'SEP', amount:3711.83,  ref:'', period:'2024',      notes:'Cash deposit from CBAP'},
+  {id:'hr9',  date:'2024-10-10', year:'2024', month:'OCT', amount:7296.94,  ref:'', period:'2024',      notes:'Cash deposit from CBAP'},
+  {id:'hr10', date:'2025-01-15', year:'2025', month:'JAN', amount:8228.00,  ref:'', period:'2024',      notes:'Cash deposit from CBAP'},
+  {id:'hr11', date:'2025-02-11', year:'2025', month:'FEB', amount:5468.00,  ref:'', period:'2024',      notes:'Cash deposit from CBAP'},
+  {id:'hr12', date:'2025-04-14', year:'2025', month:'APR', amount:4681.00,  ref:'', period:'2025',      notes:'Cash deposit from CBAP'},
+  {id:'hr13', date:'2025-06-04', year:'2025', month:'JUN', amount:3844.00,  ref:'', period:'2025',      notes:'Cash deposit from CBAP'},
+  {id:'hr14', date:'2025-11-13', year:'2025', month:'NOV', amount:3900.00,  ref:'', period:'2025',      notes:'Cash deposit from CBAP'},
+];
+
+// Forwarded cash from Dec 14, 2021 — opening balance from previous QueMar treasurer (NOT a CBAP return)
+const FORWARDED_BALANCE = {id:'fwd', date:'2021-12-14', year:'2021', month:'DEC', amount:59573.75, ref:'', notes:'Forwarded cash balance — from previous QueMar treasurer'};
+
+// ── SUPABASE CONFIG ──────────────────────────────────────────
+// Fill in your credentials from Supabase → Project Settings → API
+const SUPABASE_URL = 'https://tpewhyxdtlvepuyhqcpl.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwZXdoeXhkdGx2ZXB1eWhxY3BsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM1OTU2MzksImV4cCI6MjA5OTE3MTYzOX0.qOPEvOVKWjbPpQSgAJMJbJN1d_QJH08BsUWJJKWDyWY';
+
+
+// Only fetch from Supabase when served over http(s) — not file://
+const isHosted = location.protocol.startsWith('http');
+const sb = {
+  headers:{
+    'Content-Type':'application/json',
+    'apikey':SUPABASE_ANON_KEY,
+    'Authorization':'Bearer '+SUPABASE_ANON_KEY,
+    'Prefer':'return=representation',
+  },
+  async get(table,params=''){
+    const r=await fetch(`${SUPABASE_URL}/rest/v1/${table}?${params}`,{headers:this.headers});
+    if(!r.ok) throw new Error(await r.text());
+    return r.json();
+  },
+  async post(table,body){
+    const r=await fetch(`${SUPABASE_URL}/rest/v1/${table}`,{method:'POST',headers:this.headers,body:JSON.stringify(body)});
+    if(!r.ok) throw new Error(await r.text());
+    return r.json();
+  },
+  async patch(table,id,body){
+    const r=await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`,{method:'PATCH',headers:this.headers,body:JSON.stringify(body)});
+    if(!r.ok) throw new Error(await r.text());
+    return r.json();
+  },
+  async delete(table,id){
+    const r=await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`,{method:'DELETE',headers:this.headers});
+    if(!r.ok) throw new Error(await r.text());
+    return r.json();
+  },
+  async upsert(table,body){
+    const h={...this.headers,'Prefer':'resolution=merge-duplicates,return=representation'};
+    const r=await fetch(`${SUPABASE_URL}/rest/v1/${table}`,{method:'POST',headers:h,body:JSON.stringify(body)});
+    if(!r.ok) throw new Error(await r.text());
+    return r.json();
+  },
+};
+
+let _dbCache={};
+async function dbGet(table,params='',ttl=30000){
+  if(!isHosted) throw new Error('Running locally — open via a web server or Netlify to use the database.');
+  const key=table+params;
+  if(_dbCache[key]&&Date.now()-_dbCache[key].t<ttl) return _dbCache[key].d;
+  const d=await sb.get(table,params);
+  _dbCache[key]={d,t:Date.now()};
+  return d;
+}
+function dbInvalidate(table){ Object.keys(_dbCache).filter(k=>k.startsWith(table)).forEach(k=>delete _dbCache[k]); }
+
+// DB state — populated on login
+let _userEntries=[], _userReturns=[], _userCashflow=[];
+async function initDB(){
+  try{
+    [_userEntries,_userReturns,_userCashflow]=await Promise.all([
+      sb.get('qm_entries','order=created_at.desc'),
+      sb.get('qm_cmf_returns','order=date.asc'),
+      sb.get('qm_cashflow_entries','order=date.asc').then(rows=>rows.map(r=>({...r,desc:r.description||r.desc||''}))),
+    ]);
+  }catch(e){
+    if(!isHosted) console.info('ℹ Running from file:// — database disabled. Host on Netlify/server to enable.');
+    else if(isHosted) console.warn('DB unavailable, using localStorage:',e.message);
+    _userEntries=JSON.parse(localStorage.getItem('qm_entries')||'[]');
+    _userReturns=JSON.parse(localStorage.getItem('qm_cmf_returns')||'[]');
+    _userCashflow=JSON.parse(localStorage.getItem('qm_cashflow')||'[]');
+  }
+}
+
+
+// ── STORAGE — backed by Supabase ─────────────────────────────
+const STORAGE_KEYS={entries:'qm_entries',churches:'qm_churches',password:'qm_admin_pass',returns:'qm_cmf_returns'};
+
+// Entries
+async function loadEntries(){
+  try{ return await dbGet('qm_entries','order=created_at.desc'); }
+  catch(e){ console.warn('DB error, using localStorage',e); return JSON.parse(localStorage.getItem(STORAGE_KEYS.entries)||'[]'); }
+}
+async function saveEntries(entries){
+  // saveEntries is called with full array from old code — not used in new flow
+  // Individual add/delete handle DB directly
+}
+
+// Churches
+async function loadChurches(){
+  try{
+    const rows = await dbGet('qm_churches','order=name.asc');
+    if(rows.length) return rows.map(r=>r.name);
+    return DEFAULT_CHURCHES;
+  }catch(e){ return JSON.parse(localStorage.getItem(STORAGE_KEYS.churches)||JSON.stringify(DEFAULT_CHURCHES)); }
+}
+async function saveChurches(names){
+  try{
+    // Replace all church records
+    await fetch(`${SUPABASE_URL}/rest/v1/qm_churches`, {method:'DELETE', headers:{...sb.headers,'Prefer':''}});
+    if(names.length) await sb.post('qm_churches', names.map(name=>({name})));
+    dbInvalidate('qm_churches');
+  }catch(e){ localStorage.setItem(STORAGE_KEYS.churches,JSON.stringify(names)); }
+}
+
+// Password
+async function getPassword(){
+  try{
+    const rows = await dbGet('qm_settings','key=eq.admin_password&select=value', 60000);
+    return rows[0]?.value || 'quemar2024';
+  }catch(e){ return localStorage.getItem(STORAGE_KEYS.password)||'quemar2024'; }
+}
+async function savePassword(p){
+  try{
+    await sb.upsert('qm_settings',{key:'admin_password',value:p});
+    dbInvalidate('qm_settings');
+  }catch(e){ localStorage.setItem(STORAGE_KEYS.password,p); }
+}
+
+// Returns
+function loadUserReturns(){ return []; } // legacy, use loadReturnsDB
+async function loadReturnsDB(){
+  try{ return await dbGet('qm_cmf_returns','order=date.asc'); }
+  catch(e){ return JSON.parse(localStorage.getItem(STORAGE_KEYS.returns)||'[]'); }
+}
+async function saveReturns(){ /* handled by addReturn/deleteReturn directly */ }
+
+// Cashflow user entries
+async function loadCashflowEntries(){
+  try{ return await dbGet('qm_cashflow_entries','order=date.asc').then(rows=>rows.map(r=>({...r,desc:r.description||r.desc||''}))); }
+  catch(e){ return JSON.parse(localStorage.getItem('qm_cashflow')||'[]'); }
+}
+async function saveCashflowEntries(){ /* handled directly */ }
+
+function getAllData(){
+  // returns HIST synchronously — user entries loaded async separately
+  return [...HIST, ...(_userEntries||[])];
+}
+
+
+// Override loadReturns to use DB data
+function loadReturns(){
+  return [...HIST_RETURNS, ..._userReturns].sort((a,b)=>a.date>b.date?1:-1);
+}
+function getReturns(){ return loadReturns(); }
+function getAllCashflow(){
+  return [...CASHFLOW, ..._userCashflow].sort((a,b)=>a.date>b.date?1:-1);
+}
+
+
+
+// ── DEFAULT DATA ────────────────────────────────────────────
+const HIST = [
+  {year:'2021',month:'JAN',church:'SCBC Main',amount:3170.40,remitted:1},{year:'2021',month:'JAN',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2021',month:'JAN',church:'SCBC Janagdong',amount:100.00,remitted:1},{year:'2021',month:'JAN',church:'LCBC',amount:3000.00,remitted:1},{year:'2021',month:'JAN',church:'JSTCF',amount:1300.00,remitted:1},{year:'2021',month:'JAN',church:'JLM',amount:6811.70,remitted:1},{year:'2021',month:'JAN',church:'CCBC Bonliw',amount:326.60,remitted:1},{year:'2021',month:'JAN',church:'CCBC Balogo',amount:518.50,remitted:1},
+  {year:'2021',month:'FEB',church:'SCBC Main',amount:3671.25,remitted:1},{year:'2021',month:'FEB',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2021',month:'FEB',church:'SCBC Janagdong',amount:100.00,remitted:1},{year:'2021',month:'FEB',church:'CCBC Bonliw',amount:204.70,remitted:1},{year:'2021',month:'FEB',church:'CCBC Balogo',amount:428.30,remitted:1},
+  {year:'2021',month:'MAR',church:'SCBC Main',amount:3254.10,remitted:1},{year:'2021',month:'MAR',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2021',month:'MAR',church:'SCBC Janagdong',amount:100.00,remitted:1},{year:'2021',month:'MAR',church:'CCBC Bonliw',amount:162.90,remitted:1},{year:'2021',month:'MAR',church:'CCBC Balogo',amount:310.30,remitted:1},
+  {year:'2021',month:'APR',church:'CCBC Pinagpala',amount:4500.00,remitted:1},{year:'2021',month:'APR',church:'SCBC Main',amount:2014.95,remitted:1},{year:'2021',month:'APR',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2021',month:'APR',church:'SCBC Janagdong',amount:100.00,remitted:1},{year:'2021',month:'APR',church:'LBC',amount:3000.00,remitted:1},{year:'2021',month:'APR',church:'CCBC Bonliw',amount:304.30,remitted:1},{year:'2021',month:'APR',church:'CCBC Balogo',amount:217.90,remitted:1},
+  {year:'2021',month:'MAY',church:'SCBC Main',amount:3895.95,remitted:1},{year:'2021',month:'MAY',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2021',month:'MAY',church:'CCBC Bonliw',amount:294.70,remitted:1},{year:'2021',month:'MAY',church:'CCBC Balogo',amount:356.50,remitted:1},
+  {year:'2021',month:'JUN',church:'SCBC Main',amount:2253.30,remitted:1},{year:'2021',month:'JUN',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2021',month:'JUN',church:'JSTCF',amount:2810.00,remitted:1},{year:'2021',month:'JUN',church:'CCBC Bonliw',amount:251.00,remitted:1},{year:'2021',month:'JUN',church:'CCBC Balogo',amount:206.00,remitted:1},
+  {year:'2021',month:'JUL',church:'SCBC Main',amount:2998.77,remitted:1},{year:'2021',month:'JUL',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2021',month:'JUL',church:'LCBC',amount:3000.00,remitted:1},{year:'2021',month:'JUL',church:'JLM',amount:10551.30,remitted:1},{year:'2021',month:'JUL',church:'CCBC Bonliw',amount:243.80,remitted:1},{year:'2021',month:'JUL',church:'CCBC Balogo',amount:186.00,remitted:1},
+  {year:'2021',month:'AUG',church:'SCBC Main',amount:278.85,remitted:1},{year:'2021',month:'AUG',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2021',month:'AUG',church:'CCBC Bonliw',amount:245.20,remitted:1},{year:'2021',month:'AUG',church:'CCBC Balogo',amount:203.60,remitted:1},
+  {year:'2021',month:'SEP',church:'SCBC Main',amount:1338.00,remitted:1},{year:'2021',month:'SEP',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2021',month:'SEP',church:'JSTCF',amount:3216.00,remitted:1},{year:'2021',month:'SEP',church:'CCBC Bonliw',amount:335.60,remitted:1},{year:'2021',month:'SEP',church:'CCBC Balogo',amount:216.70,remitted:1},
+  {year:'2021',month:'OCT',church:'SCBC Main',amount:2705.18,remitted:1},{year:'2021',month:'OCT',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2021',month:'OCT',church:'LCBC',amount:3000.00,remitted:1},{year:'2021',month:'OCT',church:'CCBC Bonliw',amount:758.90,remitted:1},{year:'2021',month:'OCT',church:'CCBC Balogo',amount:380.50,remitted:1},
+  {year:'2021',month:'NOV',church:'SCBC Main',amount:4732.05,remitted:1},{year:'2021',month:'NOV',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2021',month:'NOV',church:'CCBC Bonliw',amount:454.70,remitted:1},{year:'2021',month:'NOV',church:'CCBC Balogo',amount:327.90,remitted:1},
+  {year:'2021',month:'DEC',church:'SCBC Main',amount:3886.80,remitted:1},{year:'2021',month:'DEC',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2021',month:'DEC',church:'CCBC Bonliw',amount:665.90,remitted:1},{year:'2021',month:'DEC',church:'CCBC Balogo',amount:264.00,remitted:1},
+  // 2022
+  {year:'2022',month:'JAN',church:'SCBC Main',amount:3125.00,remitted:1},{year:'2022',month:'JAN',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2022',month:'JAN',church:'LCBC',amount:6000.00,remitted:1},{year:'2022',month:'JAN',church:'JLM',amount:20977.08,remitted:1},{year:'2022',month:'JAN',church:'CCBC Bonliw',amount:449.90,remitted:1},{year:'2022',month:'JAN',church:'CCBC Balogo',amount:457.00,remitted:1},
+  {year:'2022',month:'FEB',church:'SCBC Main',amount:2874.00,remitted:1},{year:'2022',month:'FEB',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2022',month:'FEB',church:'JSTCF',amount:827.50,remitted:1},{year:'2022',month:'FEB',church:'CCBC Bonliw',amount:467.00,remitted:1},{year:'2022',month:'FEB',church:'CCBC Balogo',amount:248.90,remitted:1},
+  {year:'2022',month:'MAR',church:'SCBC Main',amount:1779.00,remitted:1},{year:'2022',month:'MAR',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2022',month:'MAR',church:'CCBC Bonliw',amount:260.30,remitted:1},{year:'2022',month:'MAR',church:'CCBC Balogo',amount:221.10,remitted:1},
+  {year:'2022',month:'APR',church:'SCBC Main',amount:707.30,remitted:1},{year:'2022',month:'APR',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2022',month:'APR',church:'JSTCF',amount:1487.00,remitted:1},{year:'2022',month:'APR',church:'CCBC Bonliw',amount:270.30,remitted:1},{year:'2022',month:'APR',church:'CCBC Balogo',amount:288.80,remitted:1},
+  {year:'2022',month:'MAY',church:'SCBC Main',amount:1624.00,remitted:1},{year:'2022',month:'MAY',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2022',month:'MAY',church:'CCBC Bonliw',amount:305.60,remitted:1},{year:'2022',month:'MAY',church:'CCBC Balogo',amount:539.50,remitted:1},
+  {year:'2022',month:'JUN',church:'SCBC Main',amount:1342.25,remitted:1},{year:'2022',month:'JUN',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2022',month:'JUN',church:'CCBC Bonliw',amount:305.10,remitted:1},{year:'2022',month:'JUN',church:'CCBC Balogo',amount:457.00,remitted:1},
+  {year:'2022',month:'JUL',church:'SCBC Main',amount:2080.80,remitted:1},{year:'2022',month:'JUL',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2022',month:'JUL',church:'LCBC',amount:6000.00,remitted:1},{year:'2022',month:'JUL',church:'JSTCF',amount:2280.00,remitted:1},{year:'2022',month:'JUL',church:'CCBC Bonliw',amount:634.30,remitted:1},{year:'2022',month:'JUL',church:'CCBC Balogo',amount:268.50,remitted:1},
+  {year:'2022',month:'AUG',church:'SCBC Main',amount:1044.00,remitted:1},{year:'2022',month:'AUG',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2022',month:'AUG',church:'CCBC Bonliw',amount:538.70,remitted:1},{year:'2022',month:'AUG',church:'CCBC Balogo',amount:376.70,remitted:1},
+  {year:'2022',month:'SEP',church:'SCBC Main',amount:1315.00,remitted:1},{year:'2022',month:'SEP',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2022',month:'SEP',church:'CCBC Bonliw',amount:343.60,remitted:1},{year:'2022',month:'SEP',church:'CCBC Balogo',amount:257.70,remitted:1},
+  {year:'2022',month:'OCT',church:'SCBC Main',amount:640.00,remitted:1},{year:'2022',month:'OCT',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2022',month:'OCT',church:'JSTCF',amount:1600.00,remitted:1},{year:'2022',month:'OCT',church:'CCBC Bonliw',amount:400.30,remitted:1},{year:'2022',month:'OCT',church:'CCBC Balogo',amount:402.80,remitted:1},
+  {year:'2022',month:'NOV',church:'SCBC Main',amount:752.00,remitted:1},{year:'2022',month:'NOV',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2022',month:'NOV',church:'CCBC Bonliw',amount:782.00,remitted:1},{year:'2022',month:'NOV',church:'CCBC Balogo',amount:823.20,remitted:1},
+  {year:'2022',month:'DEC',church:'SCBC Main',amount:1726.95,remitted:1},{year:'2022',month:'DEC',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2022',month:'DEC',church:'CCBC Bonliw',amount:532.40,remitted:1},{year:'2022',month:'DEC',church:'CCBC Balogo',amount:338.70,remitted:1},
+  // 2023
+  {year:'2023',month:'JAN',church:'CCBC Pinagpala',amount:3000.00,remitted:1},{year:'2023',month:'JAN',church:'SCBC Main',amount:1183.00,remitted:1},{year:'2023',month:'JAN',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2023',month:'JAN',church:'LCBC',amount:3000.00,remitted:1},{year:'2023',month:'JAN',church:'JSTCF',amount:975.00,remitted:1},{year:'2023',month:'JAN',church:'JLM',amount:6063.90,remitted:1},{year:'2023',month:'JAN',church:'CCBC Kansurok',amount:416.30,remitted:1},{year:'2023',month:'JAN',church:'CCBC Bonliw',amount:623.40,remitted:1},{year:'2023',month:'JAN',church:'CCBC Balogo',amount:210.70,remitted:1},
+  {year:'2023',month:'FEB',church:'SCBC Main',amount:1333.00,remitted:1},{year:'2023',month:'FEB',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2023',month:'FEB',church:'JSTCF',amount:2115.00,remitted:1},{year:'2023',month:'FEB',church:'CCBC Bonliw',amount:294.80,remitted:1},{year:'2023',month:'FEB',church:'CCBC Balogo',amount:366.60,remitted:1},{year:'2023',month:'FEB',church:'CCBC Kansurok',amount:534.00,remitted:1},
+  {year:'2023',month:'MAR',church:'SCBC Main',amount:1572.00,remitted:1},{year:'2023',month:'MAR',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2023',month:'MAR',church:'CCBC Kansurok',amount:462.80,remitted:1},{year:'2023',month:'MAR',church:'CCBC Bonliw',amount:409.80,remitted:1},{year:'2023',month:'MAR',church:'CCBC Balogo',amount:297.00,remitted:1},
+  {year:'2023',month:'APR',church:'CCBC',amount:1666.67,remitted:1},{year:'2023',month:'APR',church:'SCBC Main',amount:1152.00,remitted:1},{year:'2023',month:'APR',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2023',month:'APR',church:'LCBC',amount:3000.00,remitted:1},{year:'2023',month:'APR',church:'CCBC Kansurok',amount:478.70,remitted:1},{year:'2023',month:'APR',church:'CCBC Bonliw',amount:411.20,remitted:1},{year:'2023',month:'APR',church:'CCBC Balogo',amount:312.90,remitted:1},
+  {year:'2023',month:'MAY',church:'CCBC',amount:1666.67,remitted:1},{year:'2023',month:'MAY',church:'SCBC Main',amount:1213.00,remitted:1},{year:'2023',month:'MAY',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2023',month:'MAY',church:'JSTCF',amount:4653.00,remitted:1},{year:'2023',month:'MAY',church:'CCBC Kansurok',amount:298.30,remitted:1},{year:'2023',month:'MAY',church:'CCBC Bonliw',amount:337.00,remitted:1},{year:'2023',month:'MAY',church:'CCBC Balogo',amount:379.90,remitted:1},
+  {year:'2023',month:'JUN',church:'CCBC',amount:1666.67,remitted:1},{year:'2023',month:'JUN',church:'SCBC Main',amount:706.00,remitted:1},{year:'2023',month:'JUN',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2023',month:'JUN',church:'JLM',amount:8800.00,remitted:1},{year:'2023',month:'JUN',church:'CCBC Kansurok',amount:375.00,remitted:1},{year:'2023',month:'JUN',church:'CCBC Bonliw',amount:305.40,remitted:1},{year:'2023',month:'JUN',church:'CCBC Balogo',amount:367.40,remitted:1},
+  {year:'2023',month:'JUL',church:'CCBC',amount:1666.67,remitted:1},{year:'2023',month:'JUL',church:'CCBC Pinagpala',amount:3000.00,remitted:1},{year:'2023',month:'JUL',church:'SCBC Main',amount:1088.00,remitted:1},{year:'2023',month:'JUL',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2023',month:'JUL',church:'LCBC',amount:3000.00,remitted:1},{year:'2023',month:'JUL',church:'JSTCF',amount:1723.00,remitted:1},{year:'2023',month:'JUL',church:'LBC',amount:3000.00,remitted:1},{year:'2023',month:'JUL',church:'CCBC Kansurok',amount:240.00,remitted:1},{year:'2023',month:'JUL',church:'CCBC Bonliw',amount:365.40,remitted:1},{year:'2023',month:'JUL',church:'CCBC Balogo',amount:306.80,remitted:1},{year:'2023',month:'JUL',church:'MCF',amount:314.00,remitted:1},
+  {year:'2023',month:'AUG',church:'CCBC',amount:1666.67,remitted:1},{year:'2023',month:'AUG',church:'SCBC Main',amount:1628.00,remitted:1},{year:'2023',month:'AUG',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2023',month:'AUG',church:'SCBC Janagdong',amount:100.00,remitted:1},{year:'2023',month:'AUG',church:'MCF',amount:580.00,remitted:1},{year:'2023',month:'AUG',church:'CCBC Kansurok',amount:337.50,remitted:1},{year:'2023',month:'AUG',church:'CCBC Bonliw',amount:382.40,remitted:1},{year:'2023',month:'AUG',church:'CCBC Balogo',amount:258.20,remitted:1},
+  {year:'2023',month:'SEP',church:'CCBC',amount:1666.65,remitted:1},{year:'2023',month:'SEP',church:'SCBC Main',amount:1622.00,remitted:1},{year:'2023',month:'SEP',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2023',month:'SEP',church:'SCBC Janagdong',amount:100.00,remitted:1},{year:'2023',month:'SEP',church:'CCBC Kansurok',amount:154.20,remitted:1},{year:'2023',month:'SEP',church:'CCBC Bonliw',amount:505.00,remitted:1},{year:'2023',month:'SEP',church:'CCBC Balogo',amount:259.20,remitted:1},
+  {year:'2023',month:'OCT',church:'CCBC',amount:1666.67,remitted:1},{year:'2023',month:'OCT',church:'SCBC Main',amount:1400.00,remitted:1},{year:'2023',month:'OCT',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2023',month:'OCT',church:'SCBC Janagdong',amount:100.00,remitted:1},{year:'2023',month:'OCT',church:'LCBC',amount:3000.00,remitted:1},{year:'2023',month:'OCT',church:'LBC',amount:3000.00,remitted:1},{year:'2023',month:'OCT',church:'CCBC Kansurok',amount:928.40,remitted:1},{year:'2023',month:'OCT',church:'CCBC Bonliw',amount:372.90,remitted:1},{year:'2023',month:'OCT',church:'CCBC Balogo',amount:452.80,remitted:1},
+  {year:'2023',month:'NOV',church:'CCBC',amount:1666.67,remitted:1},{year:'2023',month:'NOV',church:'SCBC Main',amount:1366.00,remitted:1},{year:'2023',month:'NOV',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2023',month:'NOV',church:'SCBC Janagdong',amount:100.00,remitted:1},{year:'2023',month:'NOV',church:'MCF',amount:500.00,remitted:1},{year:'2023',month:'NOV',church:'CCBC Kansurok',amount:543.20,remitted:1},{year:'2023',month:'NOV',church:'CCBC Bonliw',amount:475.10,remitted:1},{year:'2023',month:'NOV',church:'CCBC Balogo',amount:297.30,remitted:1},
+  {year:'2023',month:'DEC',church:'CCBC',amount:1666.67,remitted:1},{year:'2023',month:'DEC',church:'SCBC Main',amount:3004.00,remitted:1},{year:'2023',month:'DEC',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2023',month:'DEC',church:'SCBC Janagdong',amount:100.00,remitted:1},{year:'2023',month:'DEC',church:'CCBC Kansurok',amount:520.50,remitted:1},{year:'2023',month:'DEC',church:'CCBC Bonliw',amount:601.60,remitted:1},{year:'2023',month:'DEC',church:'CCBC Balogo',amount:603.20,remitted:1},
+  // 2024
+  {year:'2024',month:'JAN',church:'CCBC',amount:1666.67,remitted:1},{year:'2024',month:'JAN',church:'SCBC Main',amount:2737.53,remitted:1},{year:'2024',month:'JAN',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2024',month:'JAN',church:'SCBC Janagdong',amount:100.00,remitted:1},{year:'2024',month:'JAN',church:'SCBC Mamala',amount:100.00,remitted:1},{year:'2024',month:'JAN',church:'LCBC',amount:3000.00,remitted:1},{year:'2024',month:'JAN',church:'JSTCF',amount:3830.00,remitted:1},{year:'2024',month:'JAN',church:'LBC',amount:6000.00,remitted:1},{year:'2024',month:'JAN',church:'JLM',amount:3826.95,remitted:1},{year:'2024',month:'JAN',church:'CCBC Kansurok',amount:351.30,remitted:1},{year:'2024',month:'JAN',church:'CCBC Bonliw',amount:399.50,remitted:1},{year:'2024',month:'JAN',church:'CCBC Balogo',amount:265.80,remitted:1},
+  {year:'2024',month:'FEB',church:'CCBC',amount:1666.67,remitted:1},{year:'2024',month:'FEB',church:'SCBC Main',amount:1546.20,remitted:1},{year:'2024',month:'FEB',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2024',month:'FEB',church:'SCBC Janagdong',amount:100.00,remitted:1},{year:'2024',month:'FEB',church:'SCBC Mamala',amount:100.00,remitted:1},{year:'2024',month:'FEB',church:'CCBC Kansurok',amount:275.30,remitted:1},{year:'2024',month:'FEB',church:'CCBC Bonliw',amount:450.40,remitted:1},{year:'2024',month:'FEB',church:'CCBC Balogo',amount:334.20,remitted:1},
+  {year:'2024',month:'MAR',church:'CCBC',amount:1666.65,remitted:1},{year:'2024',month:'MAR',church:'SCBC Main',amount:1546.20,remitted:1},{year:'2024',month:'MAR',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2024',month:'MAR',church:'SCBC Janagdong',amount:100.00,remitted:1},{year:'2024',month:'MAR',church:'SCBC Mamala',amount:100.00,remitted:1},{year:'2024',month:'MAR',church:'CCBC Kansurok',amount:311.90,remitted:1},{year:'2024',month:'MAR',church:'CCBC Bonliw',amount:419.40,remitted:1},{year:'2024',month:'MAR',church:'CCBC Balogo',amount:324.30,remitted:1},
+  {year:'2024',month:'APR',church:'CCBC',amount:1666.67,remitted:1},{year:'2024',month:'APR',church:'SCBC Main',amount:1466.00,remitted:1},{year:'2024',month:'APR',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2024',month:'APR',church:'SCBC Janagdong',amount:100.00,remitted:1},{year:'2024',month:'APR',church:'SCBC Mamala',amount:100.00,remitted:1},{year:'2024',month:'APR',church:'LCBC',amount:3000.00,remitted:1},{year:'2024',month:'APR',church:'JLM',amount:5086.23,remitted:1},{year:'2024',month:'APR',church:'CCBC Kansurok',amount:359.90,remitted:1},{year:'2024',month:'APR',church:'CCBC Bonliw',amount:414.10,remitted:1},{year:'2024',month:'APR',church:'CCBC Balogo',amount:266.50,remitted:1},
+  {year:'2024',month:'MAY',church:'CCBC',amount:1666.67,remitted:1},{year:'2024',month:'MAY',church:'SCBC Main',amount:1676.70,remitted:1},{year:'2024',month:'MAY',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2024',month:'MAY',church:'SCBC Janagdong',amount:100.00,remitted:1},{year:'2024',month:'MAY',church:'SCBC Mamala',amount:100.00,remitted:1},{year:'2024',month:'MAY',church:'CCBC Kansurok',amount:210.70,remitted:1},{year:'2024',month:'MAY',church:'CCBC Bonliw',amount:157.90,remitted:1},{year:'2024',month:'MAY',church:'CCBC Balogo',amount:345.50,remitted:1},
+  {year:'2024',month:'JUN',church:'CCBC',amount:1666.67,remitted:1},{year:'2024',month:'JUN',church:'SCBC Main',amount:2021.64,remitted:1},{year:'2024',month:'JUN',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2024',month:'JUN',church:'SCBC Janagdong',amount:100.00,remitted:1},{year:'2024',month:'JUN',church:'SCBC Mamala',amount:100.00,remitted:1},{year:'2024',month:'JUN',church:'CCBC Kansurok',amount:531.10,remitted:1},{year:'2024',month:'JUN',church:'CCBC Bonliw',amount:495.20,remitted:1},{year:'2024',month:'JUN',church:'CCBC Balogo',amount:442.60,remitted:1},
+  {year:'2024',month:'JUL',church:'CCBC',amount:1666.67,remitted:1},{year:'2024',month:'JUL',church:'SCBC Main',amount:3642.06,remitted:1},{year:'2024',month:'JUL',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2024',month:'JUL',church:'SCBC Janagdong',amount:100.00,remitted:1},{year:'2024',month:'JUL',church:'SCBC Mamala',amount:100.00,remitted:1},{year:'2024',month:'JUL',church:'LCBC',amount:3000.00,remitted:1},{year:'2024',month:'JUL',church:'LBC',amount:3000.00,remitted:1},{year:'2024',month:'JUL',church:'JLM',amount:12958.00,remitted:1},{year:'2024',month:'JUL',church:'CCBC Kansurok',amount:359.40,remitted:1},{year:'2024',month:'JUL',church:'CCBC Bonliw',amount:244.70,remitted:1},{year:'2024',month:'JUL',church:'CCBC Balogo',amount:281.20,remitted:1},
+  {year:'2024',month:'AUG',church:'CCBC',amount:1666.67,remitted:1},{year:'2024',month:'AUG',church:'SCBC Main',amount:2730.69,remitted:1},{year:'2024',month:'AUG',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2024',month:'AUG',church:'SCBC Janagdong',amount:100.00,remitted:1},{year:'2024',month:'AUG',church:'SCBC Mamala',amount:100.00,remitted:1},{year:'2024',month:'AUG',church:'MCF',amount:779.00,remitted:1},{year:'2024',month:'AUG',church:'CCBC Kansurok',amount:435.00,remitted:1},{year:'2024',month:'AUG',church:'CCBC Bonliw',amount:230.40,remitted:1},{year:'2024',month:'AUG',church:'CCBC Balogo',amount:433.60,remitted:1},
+  {year:'2024',month:'SEP',church:'CCBC',amount:1666.65,remitted:1},{year:'2024',month:'SEP',church:'SCBC Main',amount:1630.95,remitted:1},{year:'2024',month:'SEP',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2024',month:'SEP',church:'SCBC Janagdong',amount:100.00,remitted:1},{year:'2024',month:'SEP',church:'SCBC Mamala',amount:100.00,remitted:1},{year:'2024',month:'SEP',church:'CCBC Kansurok',amount:511.80,remitted:1},{year:'2024',month:'SEP',church:'CCBC Bonliw',amount:291.40,remitted:1},{year:'2024',month:'SEP',church:'CCBC Balogo',amount:207.70,remitted:1},
+  {year:'2024',month:'OCT',church:'SCBC Main',amount:1757.85,remitted:1},{year:'2024',month:'OCT',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2024',month:'OCT',church:'SCBC Janagdong',amount:100.00,remitted:1},{year:'2024',month:'OCT',church:'SCBC Mamala',amount:100.00,remitted:1},{year:'2024',month:'OCT',church:'LCBC',amount:3000.00,remitted:1},{year:'2024',month:'OCT',church:'LBC',amount:3000.00,remitted:1},{year:'2024',month:'OCT',church:'CCBC Kansurok',amount:305.80,remitted:1},{year:'2024',month:'OCT',church:'CCBC Bonliw',amount:227.50,remitted:1},{year:'2024',month:'OCT',church:'CCBC Balogo',amount:279.10,remitted:1},
+  {year:'2024',month:'NOV',church:'SCBC Main',amount:2112.15,remitted:1},{year:'2024',month:'NOV',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2024',month:'NOV',church:'SCBC Janagdong',amount:100.00,remitted:1},{year:'2024',month:'NOV',church:'SCBC Mamala',amount:100.00,remitted:1},{year:'2024',month:'NOV',church:'CCBC Kansurok',amount:538.90,remitted:1},{year:'2024',month:'NOV',church:'CCBC Bonliw',amount:246.00,remitted:1},{year:'2024',month:'NOV',church:'CCBC Balogo',amount:200.70,remitted:1},
+  {year:'2024',month:'DEC',church:'CCBC',amount:10000.00,remitted:1},{year:'2024',month:'DEC',church:'SCBC Main',amount:4671.45,remitted:1},{year:'2024',month:'DEC',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2024',month:'DEC',church:'SCBC Janagdong',amount:100.00,remitted:1},{year:'2024',month:'DEC',church:'SCBC Mamala',amount:100.00,remitted:1},{year:'2024',month:'DEC',church:'CCBC Kansurok',amount:371.80,remitted:1},{year:'2024',month:'DEC',church:'CCBC Bonliw',amount:220.10,remitted:1},{year:'2024',month:'DEC',church:'CCBC Balogo',amount:370.90,remitted:1},
+  // 2025
+  {year:'2025',month:'JAN',church:'SCBC Main',amount:1475.07,remitted:1},{year:'2025',month:'JAN',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2025',month:'JAN',church:'SCBC Mamala',amount:100.00,remitted:1},{year:'2025',month:'JAN',church:'LCBC',amount:3000.00,remitted:1},{year:'2025',month:'JAN',church:'LBC',amount:3000.00,remitted:1},{year:'2025',month:'JAN',church:'JLM',amount:5548.00,remitted:1},{year:'2025',month:'JAN',church:'CCBC Kansurok',amount:466.30,remitted:1},{year:'2025',month:'JAN',church:'CCBC Bonliw',amount:3780.00,remitted:1},
+  {year:'2025',month:'FEB',church:'SCBC Main',amount:1844.88,remitted:1},{year:'2025',month:'FEB',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2025',month:'FEB',church:'SCBC Mamala',amount:100.00,remitted:1},{year:'2025',month:'FEB',church:'CCBC Kansurok',amount:536.70,remitted:1},
+  {year:'2025',month:'MAR',church:'SCBC Main',amount:2207.91,remitted:1},{year:'2025',month:'MAR',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2025',month:'MAR',church:'SCBC Mamala',amount:100.00,remitted:1},{year:'2025',month:'MAR',church:'CCBC Kansurok',amount:602.10,remitted:1},
+  {year:'2025',month:'APR',church:'SCBC Main',amount:1437.90,remitted:1},{year:'2025',month:'APR',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2025',month:'APR',church:'SCBC Mamala',amount:100.00,remitted:1},{year:'2025',month:'APR',church:'LCBC',amount:3000.00,remitted:1},{year:'2025',month:'APR',church:'LBC',amount:3000.00,remitted:1},{year:'2025',month:'APR',church:'CCBC Kansurok',amount:548.10,remitted:1},
+  {year:'2025',month:'MAY',church:'CCBC',amount:10000.00,remitted:1},{year:'2025',month:'MAY',church:'SCBC Main',amount:1373.64,remitted:1},{year:'2025',month:'MAY',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2025',month:'MAY',church:'SCBC Mamala',amount:100.00,remitted:1},{year:'2025',month:'MAY',church:'CCBC Kansurok',amount:421.90,remitted:1},
+  {year:'2025',month:'JUN',church:'SCBC Main',amount:1601.79,remitted:1},{year:'2025',month:'JUN',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2025',month:'JUN',church:'SCBC Mamala',amount:100.00,remitted:1},{year:'2025',month:'JUN',church:'CCBC Kansurok',amount:605.90,remitted:1},
+  {year:'2025',month:'JUL',church:'SCBC Main',amount:1570.35,remitted:1},{year:'2025',month:'JUL',church:'SCBC Castanas',amount:100.00,remitted:1},{year:'2025',month:'JUL',church:'SCBC Mamala',amount:100.00,remitted:1},{year:'2025',month:'JUL',church:'LCBC',amount:3000.00,remitted:1},{year:'2025',month:'JUL',church:'LBC',amount:3000.00,remitted:1},{year:'2025',month:'JUL',church:'CCBC Kansurok',amount:505.50,remitted:1},
+  {year:'2025',month:'AUG',church:'SCBC Main',amount:1944.30,remitted:1},{year:'2025',month:'AUG',church:'CCBC Kansurok',amount:571.60,remitted:1},
+  {year:'2025',month:'SEP',church:'SCBC Main',amount:1754.50,remitted:1},{year:'2025',month:'SEP',church:'CCBC Kansurok',amount:448.70,remitted:1},
+  {year:'2025',month:'OCT',church:'CCBC',amount:10000.00,remitted:1},{year:'2025',month:'OCT',church:'SCBC Main',amount:1403.88,remitted:1},{year:'2025',month:'OCT',church:'LCBC',amount:3000.00,remitted:1},{year:'2025',month:'OCT',church:'LBC',amount:3000.00,remitted:1},{year:'2025',month:'OCT',church:'JLM',amount:4987.00,remitted:1},{year:'2025',month:'OCT',church:'CCBC Kansurok',amount:380.40,remitted:1},
+  {year:'2025',month:'NOV',church:'SCBC Main',amount:884.88,remitted:1},{year:'2025',month:'NOV',church:'CCBC Kansurok',amount:632.20,remitted:1},
+  {year:'2025',month:'DEC',church:'SCBC Main',amount:1659.90,remitted:1},{year:'2025',month:'DEC',church:'JLM',amount:9330.00,remitted:1},{year:'2025',month:'DEC',church:'CCBC Kansurok',amount:396.40,remitted:1},
+  // 2026 — updated from PDF
+  {year:'2026',month:'JAN',church:'CCBC',amount:9000.00,remitted:1},{year:'2026',month:'JAN',church:'SCBC Main',amount:1847.85,remitted:1},{year:'2026',month:'JAN',church:'LCBC',amount:3000.00,remitted:1},{year:'2026',month:'JAN',church:'JLM',amount:4190.00,remitted:1},{year:'2026',month:'JAN',church:'LCF',amount:6000.00,remitted:1},
+  {year:'2026',month:'FEB',church:'SCBC Main',amount:4253.40,remitted:1},
+  {year:'2026',month:'MAR',church:'SCBC Main',amount:2117.70,remitted:1},
+  {year:'2026',month:'APR',church:'CCBC',amount:3000.00,remitted:1},{year:'2026',month:'APR',church:'SCBC Main',amount:949.46,remitted:1},
+  {year:'2026',month:'MAY',church:'SCBC Main',amount:1595.00,remitted:1},
+  {year:'2026',month:'JUN',church:'CCBC',amount:3000.00,remitted:1},{year:'2026',month:'JUN',church:'SCBC Main',amount:1331.88,remitted:1},
+];
+
+const DEFAULT_CHURCHES = [
+  'CCBC','CCBC Pinagpala','SCBC Main','SCBC Castanas','SCBC Janagdong','SCBC Mamala',
+  'LCBC','JSTCF','LBC','JLM','MCF','IDMP','VCC Gumaca','LCF',
+  'CCBC Kansurok','CCBC Bonliw','CCBC Balogo'
+];
+
+// ── STATE ────────────────────────────────────────────────────
+
+function doLogout(){
+  document.getElementById('app').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('l-user').value='';
+  document.getElementById('l-pass').value='';
+}
+
+// ── NAV ──────────────────────────────────────────────────────
+async function showPage(p){
+  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.querySelector(`nav button[onclick="showPage('${p}')"]`).classList.add('active');
+  // Refresh from Supabase on every tab switch
+  if(isHosted){
+    try{
+      [_userEntries,_userReturns,_userCashflow]=await Promise.all([
+        sb.get('qm_entries','order=created_at.desc'),
+        sb.get('qm_cmf_returns','order=date.asc'),
+        sb.get('qm_cashflow_entries','order=date.asc').then(rows=>rows.map(r=>({...r,desc:r.description||r.desc||''}))),
+      ]);
+      dbInvalidate('qm_entries'); dbInvalidate('qm_cmf_returns'); dbInvalidate('qm_cashflow_entries');
+    }catch(e){ console.warn('Refresh failed',e); }
+  }
+  if(p==='dashboard') renderDashboard();
+  if(p==='entry'){ await populateChurchSelects(); renderEntryTable(); }
+  if(p==='remittance') renderRemittancePage();
+  if(p==='returns') renderReturnsPage();
+  if(p==='cashflow') renderCashflowPage();
+  if(p==='manage') await renderManagePage();
+}
+
+function syncToChurchView(){ localStorage.setItem('qm_hist_returns',JSON.stringify(HIST_RETURNS)); localStorage.setItem('qm_fwd_balance',JSON.stringify(FORWARDED_BALANCE)); localStorage.setItem('qm_user_entries',JSON.stringify(_userEntries)); localStorage.setItem('qm_user_returns',JSON.stringify(_userReturns)); localStorage.setItem('qm_user_cashflow',JSON.stringify(_userCashflow)); }
+async function doLogin(){
+  const u=document.getElementById('l-user').value.trim();
+  const p=document.getElementById('l-pass').value;
+  const err=document.getElementById('login-err');
+  // Try to get password from Supabase; fall back to default
+  let stored='quemar2024';
+  if(isHosted){
+    try{
+      stored=await getPassword();
+      console.log('Password fetched from DB:', stored?'(set)':'(empty, using default)');
+    }catch(e){
+      console.warn('getPassword failed, using default:',e);
+      stored='quemar2024';
+    }
+  }
+  console.log('Login attempt — user:',u,'match:',p===stored);
+  if(u==='admin'&&p===stored){
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app').style.display='block';
+    await initApp();
+    if(err) err.style.display='none';
+  } else {
+    if(err){ err.style.display='block'; err.textContent='Incorrect username or password.'; }
+    document.getElementById('l-pass').value='';
+  }
+}
+
+async function populateChurchSelects(){
+  const churches=await loadChurches();
+  const opts=churches.map(c=>`<option value="${c}">${c}</option>`).join('');
+  const fc=document.getElementById('f-church');
+  if(fc) fc.innerHTML=opts;
+  const ec=document.getElementById('et-church');
+  if(ec) ec.innerHTML='<option value="all">All Churches</option>'+opts;
+}
+
+async function initApp(){
+  // Load DB data first, then render
+  if(isHosted){
+    try{
+      [_userEntries,_userReturns,_userCashflow]=await Promise.all([
+        sb.get('qm_entries','order=created_at.desc'),
+        sb.get('qm_cmf_returns','order=date.asc'),
+        sb.get('qm_cashflow_entries','order=date.asc').then(rows=>rows.map(r=>({...r,desc:r.description||r.desc||''}))),
+      ]);
+    }catch(e){ if(isHosted) console.warn('DB load failed:',e.message); }
+  }
+  syncToChurchView();
+  localStorage.setItem('qm_fwd_balance',JSON.stringify(FORWARDED_BALANCE));
+  renderDashboard();
+  await populateChurchSelects();
+  // Responsive grid
+  const g=document.getElementById('dash-top');
+  if(g&&window.innerWidth<700) g.style.gridTemplateColumns='1fr';
+}
+window.addEventListener('resize',()=>{
+  const g=document.getElementById('dash-top');
+  if(g) g.style.gridTemplateColumns=window.innerWidth<700?'1fr':'1fr 1fr';
+});
+
+// ── TOAST ────────────────────────────────────────────────────
+function toast(msg,type='success'){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.className='show '+type;
+  setTimeout(()=>el.className='',2800);
+}
+
+// ── FORMATTERS ───────────────────────────────────────────────
+function fmtDate(d){if(!d)return '—';const dt=new Date(d+'T00:00:00');return dt.toLocaleDateString('en-PH',{year:'numeric',month:'short',day:'numeric'});}
+const fmt=n=>'₱'+(n||0).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fmtN=n=>(n||0).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2});
+const remitBadge=r=>r?'<span class="badge badge-remitted">✔ Sent to CBAP</span>':'<span class="badge badge-pending">⏳ Pending</span>';
+
+
+// ── MISSING HELPERS ───────────────────────────────────────────
+function clearEntryForm(){
+  document.getElementById('f-amount').value='';
+  document.getElementById('f-notes').value='';
+  const yr=new Date().getFullYear();
+  const yrSel=document.getElementById('f-year');
+  if(yrSel) yrSel.value=String(yr);
+  const mo=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  const moSel=document.getElementById('f-month');
+  if(moSel) moSel.value=mo[new Date().getMonth()];
+  const rem=document.getElementById('f-remitted');
+  if(rem) rem.value='0';
+}
+
+function renderReturnsList(){
+  // Re-render the returns ledger table when year filter changes
+  renderReturnsPage();
+}
+
+function openModal(id){
+  const el=document.getElementById(id);
+  if(el){ el.classList.add('open'); setTimeout(()=>{ const inp=el.querySelector('input'); if(inp) inp.focus(); },100); }
+}
+
+function logout(){
+  document.getElementById('app').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('l-user').value='';
+  document.getElementById('l-pass').value='';
+}
+// alias
+
+
+function renderDashboard(){
+  const data=getAllData();
+  const years=['2021','2022','2023','2024','2025','2026'];
+  const total=data.reduce((s,d)=>s+d.amount,0);
+  const remitted=data.filter(d=>d.remitted).reduce((s,d)=>s+d.amount,0);
+  const pending=data.filter(d=>!d.remitted).reduce((s,d)=>s+d.amount,0);
+  const ytd=data.filter(d=>d.year==='2026').reduce((s,d)=>s+d.amount,0);
+
+  document.getElementById('a-stat-grid').innerHTML=`
+    <div class="stat-card"><div class="stat-label">Grand Total</div><div class="stat-value">${fmt(total)}</div><div class="stat-sub">100% sent to CBAP</div></div>
+    <div class="stat-card blue"><div class="stat-label">Sent to CBAP</div><div class="stat-value">${fmt(total)}</div><div class="stat-sub">100% of contributions</div></div>
+    <div class="stat-card green"><div class="stat-label">CMF 30% Received</div><div class="stat-value">${fmt(loadReturns().reduce((s,r)=>s+r.amount,0))}</div><div class="stat-sub">${loadReturns().length} deposits from CBAP</div></div>
+    <div class="stat-card red"><div class="stat-label">CMF 30% Outstanding</div><div class="stat-value">${fmt(Math.max(0,total*CMF_RATE-loadReturns().reduce((s,r)=>s+r.amount,0)))}</div><div class="stat-sub">30% expected vs received</div></div>
+  `;
+
+  // Bar chart
+  const totals=years.map(y=>data.filter(d=>d.year===y).reduce((s,d)=>s+d.amount,0));
+  const max=Math.max(...totals)||1;
+  const colors=['#c8953a','#1a2744','#2563eb','#16a34a','#7c3aed','#dc2626'];
+  document.getElementById('a-annual-chart').innerHTML=years.map((y,i)=>{
+    const h=Math.round((totals[i]/max)*160);
+    return `<div class="bar-group">
+      <div class="bar-val">${(totals[i]/1000).toFixed(0)}k</div>
+      <div class="bar" style="height:${h}px;background:${colors[i]};" title="${y}: ${fmt(totals[i])}"></div>
+      <div class="bar-label">${y}</div>
+    </div>`;
+  }).join('');
+
+  renderRemitDonut();
+
+  // Recent 10 entries
+  const recent=_userEntries.slice(0,10);
+  const tbody=recent.length?recent.map(e=>`<tr>
+    <td>${e.year}</td><td>${MONTH_FULL[e.month]||e.month}</td><td>${e.church}</td>
+    <td class="num">${fmtN(e.amount)}</td>
+    <td>${remitBadge(e.remitted)}</td>
+    <td><button class="btn btn-sm btn-ghost" onclick="quickToggleRemit(${e.id})">Toggle</button></td>
+  </tr>`).join(''):`<tr><td colspan="6" style="text-align:center;padding:20px;color:#9ca3af;">No custom entries yet.</td></tr>`;
+  document.getElementById('a-recent-table').innerHTML=`<table id='a-recent-table-inner'>
+    <thead><tr><th class='sortable' onclick="sortTable('a-recent-table-inner',0)">Year</th><th class='sortable' onclick="sortTable('a-recent-table-inner',1)">Month</th><th class='sortable' onclick="sortTable('a-recent-table-inner',2)">Church</th><th class='sortable' onclick="sortTable('a-recent-table-inner',3)">Amount</th><th class='sortable' onclick="sortTable('a-recent-table-inner',4)">Status</th><th></th></tr></thead>
+    <tbody>${tbody}</tbody></table>`;
+}
+
+
+function renderRemitDonut(){
+  const yr=document.getElementById('remit-year-filter').value;
+  const data=getAllData().filter(d=>yr==='all'||d.year===yr);
+  const remAmt=data.filter(d=>d.remitted).reduce((s,d)=>s+d.amount,0);
+  const penAmt=data.filter(d=>!d.remitted).reduce((s,d)=>s+d.amount,0);
+  const tot=remAmt+penAmt||1;
+  const remPct=((remAmt/tot)*100).toFixed(1);
+  const penPct=((penAmt/tot)*100).toFixed(1);
+
+  document.getElementById('remit-status-panel').innerHTML=`
+    <div style="margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+        <span style="color:#16a34a;font-weight:600;">✔ Sent to CBAP</span>
+        <span style="font-weight:700;">${fmt(remAmt)} (${remPct}%)</span>
+      </div>
+      <div style="height:10px;background:#f3f4f6;border-radius:5px;overflow:hidden;">
+        <div style="height:100%;width:${remPct}%;background:#16a34a;border-radius:5px;transition:.4s;"></div>
+      </div>
+    </div>
+    <div style="margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+        <span style="color:#d97706;font-weight:600;">⏳ Pending Remittance</span>
+        <span style="font-weight:700;">${fmt(penAmt)} (${penPct}%)</span>
+      </div>
+      <div style="height:10px;background:#f3f4f6;border-radius:5px;overflow:hidden;">
+        <div style="height:100%;width:${penPct}%;background:#d97706;border-radius:5px;transition:.4s;"></div>
+      </div>
+    </div>
+    <div style="font-size:11px;color:#9ca3af;border-top:1px solid #f3f4f6;padding-top:10px;">
+      Total contributions: <strong style="color:#1a2744;">${fmt(tot)}</strong>
+    </div>`;
+}
+
+
+
+function renderEntryTable(){
+  const yr=document.getElementById('et-year')?document.getElementById('et-year').value:'all';
+  const ch=document.getElementById('et-church')?document.getElementById('et-church').value:'all';
+  let entries=[...HIST,...(_userEntries||[])];
+  if(yr!=='all') entries=entries.filter(e=>e.year===yr);
+  if(ch!=='all') entries=entries.filter(e=>e.church===ch);
+
+  const tbody=entries.length?entries.map(e=>{
+    const isUser=!e.hasOwnProperty('_hist');
+    // HIST entries have no id field from DB — mark them
+    const userEntry=(_userEntries||[]).find(u=>u.id===e.id);
+    const canEdit=!!userEntry;
+    return `<tr>
+      <td>${e.year}</td>
+      <td>${MONTH_FULL[e.month]||e.month}</td>
+      <td>${e.church}</td>
+      <td class="num">${fmtN(e.amount)}</td>
+      <td class="num" style="color:#16a34a;">${fmtN(e.amount*CMF_RATE)}</td>
+      <td style="font-size:11px;color:#6b7280;">${e.notes||'—'}</td>
+      <td>${remitBadge(e.remitted)}</td>
+      <td>${canEdit?`
+        <button class="btn btn-sm ${e.remitted?'btn-danger':'btn-success'}" onclick="toggleRemit('${e.id}')">${e.remitted?'Mark Pending':'Mark Sent'}</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEntry('${e.id}')" style="margin-left:4px;">✕</button>
+      `:'<span style="font-size:10px;color:#9ca3af;">Historical</span>'}</td>
+    </tr>`;
+  }).join(''):`<tr><td colspan="8" style="text-align:center;padding:20px;color:#9ca3af;">No entries found.</td></tr>`;
+
+  const el=document.getElementById('entry-table');
+  if(!el) return;
+  el.innerHTML=`<table id='entry-table-inner'>
+    <thead><tr>
+      <th class='sortable' onclick="sortTable('entry-table-inner',0)">Year</th>
+      <th class='sortable' onclick="sortTable('entry-table-inner',1)">Month</th>
+      <th class='sortable' onclick="sortTable('entry-table-inner',2)">Church</th>
+      <th class='sortable' onclick="sortTable('entry-table-inner',3)">Amount</th>
+      <th class='sortable' onclick="sortTable('entry-table-inner',4)">CMF 30%</th>
+      <th>Notes</th>
+      <th class='sortable' onclick="sortTable('entry-table-inner',6)">Status</th>
+      <th>Actions</th>
+    </tr></thead>
+    <tbody>${tbody}</tbody>
+  </table>`;
+}
+
+// ── ENTRY CRUD ────────────────────────────────────────────────
+async function addEntry(){
+  if(!isHosted){toast('Cannot save — open via a web server or Netlify.','error');return;}
+  const year=document.getElementById('f-year').value;
+  const month=document.getElementById('f-month').value;
+  const church=document.getElementById('f-church').value;
+  const amount=parseFloat(document.getElementById('f-amount').value);
+  const notes=document.getElementById('f-notes').value.trim();
+  const remitted=parseInt(document.getElementById('f-remitted').value);
+  if(!amount||amount<=0){toast('Enter a valid amount.','error');return;}
+  try{
+    const [row] = await sb.post('qm_entries',{year,month,church,amount,notes,remitted});
+    _userEntries.unshift(row);
+    dbInvalidate('qm_entries');
+    clearEntryForm();
+    await renderAll();
+    toast(`Saved: ${church} – ${fmt(amount)}`);
+  }catch(e){toast('Save failed: '+e.message,'error');}
+}
+
+async function deleteEntry(id){
+  if(!isHosted){toast('Cannot delete — open via a web server or Netlify.','error');return;}
+  if(!confirm('Delete this entry?')) return;
+  try{
+    await sb.delete('qm_entries',id);
+    _userEntries = _userEntries.filter(e=>e.id!==id);
+    dbInvalidate('qm_entries');
+    await renderAll();
+    toast('Entry deleted.','error');
+  }catch(e){toast('Delete failed: '+e.message,'error');}
+}
+
+async function toggleRemit(id){
+  if(!isHosted){toast('Cannot update — open via a web server or Netlify.','error');return;}
+  const e = _userEntries.find(e=>e.id===id);
+  if(!e) return;
+  const newVal = e.remitted?0:1;
+  try{
+    await sb.patch('qm_entries',id,{remitted:newVal});
+    e.remitted = newVal;
+    dbInvalidate('qm_entries');
+    renderEntryTable();
+    toast(newVal?'Marked as Sent to CBAP ✔':'Marked as Pending ⏳');
+  }catch(err){toast('Update failed: '+err.message,'error');}
+}
+function quickToggleRemit(id){ toggleRemit(id); }
+
+async function renderAll(){
+  renderDashboard();
+  renderEntryTable();
+}
+
+
+// ── REMITTANCE // ── REMITTANCE PAGE ──────────────────────────────────────────
+function renderRemittancePage(){
+  _userEntries=_userEntries||[];
+  const data=getAllData();
+  const total=data.reduce((s,d)=>s+d.amount,0);
+  const remitted=data.filter(d=>d.remitted).reduce((s,d)=>s+d.amount,0);
+  const pending=data.filter(d=>!d.remitted).reduce((s,d)=>s+d.amount,0);
+
+  document.getElementById('remit-stats').innerHTML=`
+    <div class="stat-card blue"><div class="stat-label">Total Contributions</div><div class="stat-value">${fmt(total)}</div><div class="stat-sub">100% sent to CBAP</div></div>
+    <div class="stat-card green"><div class="stat-label">Confirmed Sent</div><div class="stat-value">${fmt(remitted)}</div><div class="stat-sub">${((remitted/total)*100).toFixed(1)}% of entries confirmed</div></div>
+    <div class="stat-card red"><div class="stat-label">Pending Confirmation</div><div class="stat-value">${fmt(pending)}</div><div class="stat-sub">${((pending/total)*100).toFixed(1)}% of entries</div></div>
+  `;
+  renderRemittanceTable();
+}
+
+function renderRemittanceTable(){
+  const yr=document.getElementById('rem-year').value;
+  const data=[...HIST,..._userEntries].filter(d=>yr==='all'||d.year===yr);
+
+  const grouped={};
+  data.forEach(d=>{
+    const k=d.year+'-'+d.month;
+    if(!grouped[k]) grouped[k]={year:d.year,month:d.month,total:0,remitted:1,pending:0};
+    grouped[k].total+=d.amount;
+    if(d.remitted) grouped[k].remitted+=d.amount;
+    else grouped[k].pending+=d.amount;
+  });
+
+  const rows=Object.values(grouped).sort((a,b)=>(a.year+a.month).localeCompare(b.year+b.month));
+  let totContrib=0,totRemit=0,totPend=0;
+  const tbody=rows.map(r=>{
+    totContrib+=r.total; totRemit+=r.remitted; totPend+=r.pending;
+    const status=r.pending===0?'<span class="badge badge-remitted">✔ Sent</span>':r.remitted===0?'<span class="badge badge-pending">⏳ Pending</span>':'<span class="badge" style="background:#fef3c7;color:#92400e;">⚡ Partial</span>';
+    return `<tr>
+      <td>${r.year}</td><td>${MONTH_FULL[r.month]||r.month}</td>
+      <td class="num">${fmtN(r.total)}</td>
+      <td class="num">${fmtN(r.total)}</td>
+      <td class="num" style="color:#16a34a;">${fmtN(r.remitted)}</td>
+      <td class="num" style="color:#d97706;">${r.pending>0?fmtN(r.pending):'—'}</td>
+      <td>${status}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('remittance-table').innerHTML=`<table id='remittance-table-inner'>
+    <thead><tr><th class='sortable' onclick="sortTable('remittance-table-inner',0)">Year</th><th class='sortable' onclick="sortTable('remittance-table-inner',1)">Month</th><th class='sortable' onclick="sortTable('remittance-table-inner',2)">Contributions</th><th class='sortable' onclick="sortTable('remittance-table-inner',3)">Sent to CBAP</th><th class='sortable' onclick="sortTable('remittance-table-inner',4)">Confirmed</th><th class='sortable' onclick="sortTable('remittance-table-inner',5)">Unconfirmed</th><th class='sortable' onclick="sortTable('remittance-table-inner',6)">Status</th></tr></thead>
+    <tbody>${tbody||'<tr><td colspan="7" style="text-align:center;padding:20px;color:#9ca3af;">No data.</td></tr>'}</tbody>
+    <tfoot><tr>
+      <td colspan="2" class="total-row"><strong>TOTAL</strong></td>
+      <td class="num total-row"><strong>${fmtN(totContrib)}</strong></td>
+      <td class="num total-row"><strong>${fmtN(totContrib)}</strong></td>
+      <td class="num total-row" style="color:#16a34a;"><strong>${fmtN(totRemit)}</strong></td>
+      <td class="num total-row" style="color:#d97706;"><strong>${fmtN(totPend)}</strong></td>
+      <td class="total-row"></td>
+    </tr></tfoot></table>`;
+}
+
+// ── MANAGE ───────────────────────────────────────────────────
+function renderManagePage(){
+  const churches=loadChurches();
+  document.getElementById('church-list').innerHTML=churches.map((c,i)=>`
+    <div class="church-item">
+      <span class="church-name">${c}</span>
+      <div class="church-actions">
+        <button class="btn btn-sm btn-danger" onclick="removeChurch(${i})">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+function openAddChurch(){
+  document.getElementById('new-church-name').value='';
+  document.getElementById('church-modal').classList.add('open');
+  setTimeout(()=>document.getElementById('new-church-name').focus(),100);
+}
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+// ── CHURCH CRUD ───────────────────────────────────────────────
+async function saveNewChurch(){
+  if(!isHosted){toast('Cannot save — open via a web server or Netlify.','error');return;}
+  const name=document.getElementById('new-church-name').value.trim();
+  if(!name){toast('Enter a church name.','error');return;}
+  const churches = await loadChurches();
+  if(churches.includes(name)){toast('Already exists.','error');return;}
+  try{
+    await sb.post('qm_churches',{name});
+    dbInvalidate('qm_churches');
+    closeModal('church-modal');
+    renderManagePage();
+    populateChurchSelects();
+    toast(`${name} added.`);
+  }catch(e){toast('Save failed: '+e.message,'error');}
+}
+
+async function removeChurch(name){
+  if(!isHosted){toast('Cannot delete — open via a web server or Netlify.','error');return;}
+  if(!confirm(`Remove "${name}"?`)) return;
+  try{
+    await fetch(`${SUPABASE_URL}/rest/v1/qm_churches?name=eq.${encodeURIComponent(name)}`,{method:'DELETE',headers:sb.headers});
+    dbInvalidate('qm_churches');
+    renderManagePage();
+    populateChurchSelects();
+    toast('Church removed.','error');
+  }catch(e){toast('Remove failed: '+e.message,'error');}
+}
+
+async function changePassword(){
+  if(!isHosted){toast('Cannot save — open via a web server or Netlify.','error');return;}
+  const cur=document.getElementById('pw-current').value;
+  const nw=document.getElementById('pw-new').value;
+  const cf=document.getElementById('pw-confirm').value;
+  const msg=document.getElementById('pw-msg');
+  const stored = await getPassword();
+  if(cur!==stored){msg.style.color='#dc2626';msg.textContent='Current password is incorrect.';return;}
+  if(nw.length<6){msg.style.color='#dc2626';msg.textContent='New password must be at least 6 characters.';return;}
+  if(nw!==cf){msg.style.color='#dc2626';msg.textContent='Passwords do not match.';return;}
+  await savePassword(nw);
+  msg.style.color='#16a34a'; msg.textContent='Password updated successfully.';
+  document.getElementById('pw-current').value='';
+  document.getElementById('pw-new').value='';
+  document.getElementById('pw-confirm').value='';
+}
+
+function confirmClearUserEntries(){
+  if(!confirm('This will delete ALL manually added entries. Historical data stays. Continue?')) return;
+  saveEntries([]);
+  renderEntryTable();
+  toast('User entries cleared.','error');
+}
+
+function exportCSV(){
+  const yr=document.getElementById('rem-year').value;
+  const data=getAllData().filter(d=>yr==='all'||d.year===yr);
+  const header='Year,Month,Church,Amount,CMF 30%,Sent to CBAP\n';
+  const rows=data.map(d=>`${d.year},${d.month},${d.church},${d.amount.toFixed(2)},${(d.amount*CMF_RATE).toFixed(2)},${d.remitted?'Yes':'No'}`).join('\n');
+  const blob=new Blob([header+rows],{type:'text/csv'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download=`QueMar_Remittance_${yr}.csv`; a.click();
+  toast('CSV exported!');
+}
+function exportAllCSV(){
+  const data=getAllData();
+  const header='Year,Month,Church,Amount,CMF 30%,Sent to CBAP\n';
+  const rows=data.map(d=>`${d.year},${d.month},${d.church},${d.amount.toFixed(2)},${(d.amount*CMF_RATE).toFixed(2)},${d.remitted?'Yes':'No'}`).join('\n');
+  const blob=new Blob([header+rows],{type:'text/csv'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='QueMar_AllData.csv'; a.click();
+  toast('Full export done!');
+}
+
+// ── CMF RETURNS ──────────────────────────────────────────────
+
+
+function clearReturnForm(){
+  document.getElementById('r-date').value='';
+  document.getElementById('r-amount').value='';
+  document.getElementById('r-ref').value='';
+  document.getElementById('r-notes').value='';
+  document.getElementById('r-period').value='';
+  document.getElementById('r-type').value='cbap';
+}
+function autoFillReturnDate(){
+  const v=document.getElementById('r-date').value;
+  if(!v) return;
+  const months=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  const dt=new Date(v+'T00:00:00');
+  document.getElementById('r-year').value=String(dt.getFullYear());
+  document.getElementById('r-month').value=months[dt.getMonth()];
+}
+
+async function addReturn(){
+  if(!isHosted){toast('Cannot save — open via a web server or Netlify.','error');return;}
+  const year=document.getElementById('r-year').value;
+  const month=document.getElementById('r-month').value;
+  const amount=parseFloat(document.getElementById('r-amount').value);
+  const ref=document.getElementById('r-ref').value.trim();
+  const notes=document.getElementById('r-notes').value.trim();
+  const period=document.getElementById('r-period')?.value.trim()||'';
+  if(!amount||amount<=0){toast('Enter a valid amount received.','error');return;}
+  const mo={'JAN':'01','FEB':'02','MAR':'03','APR':'04','MAY':'05','JUN':'06','JUL':'07','AUG':'08','SEP':'09','OCT':'10','NOV':'11','DEC':'12'};
+  const date=year+'-'+(mo[month]||'01')+'-01';
+  try{
+    const [row]=await sb.post('qm_cmf_returns',{date,year,month,amount,ref,notes,period});
+    _userReturns.push(row);
+    _userReturns.sort((a,b)=>a.date>b.date?1:-1);
+    dbInvalidate('qm_cmf_returns');
+    clearReturnForm();
+    renderReturnsPage();
+    toast('CMF Return saved: '+fmt(amount));
+  }catch(e){toast('Save failed: '+e.message,'error');}
+}
+
+async function deleteReturn(id){
+  if(!isHosted){toast('Cannot delete — open via a web server or Netlify.','error');return;}
+  if(!confirm('Delete this return entry?')) return;
+  try{
+    await sb.delete('qm_cmf_returns',id);
+    _userReturns=_userReturns.filter(r=>r.id!==id);
+    dbInvalidate('qm_cmf_returns');
+    renderReturnsPage();
+    toast('Return entry deleted.','error');
+  }catch(e){toast('Delete failed: '+e.message,'error');}
+}
+
+function renderReturnsPage(){
+  const returns=loadReturns();
+  const data=getAllData();
+  const totalContrib=data.reduce((s,d)=>s+d.amount,0);
+  const expected30=totalContrib*CMF_RATE;
+  const totalReceived=returns.reduce((s,r)=>s+r.amount,0);
+  const outstanding=expected30-totalReceived;
+
+  document.getElementById('ret-stats').innerHTML=`
+    <div class="stat-card blue"><div class="stat-label">CMF 30% Expected</div><div class="stat-value">${fmt(expected30)}</div><div class="stat-sub">30% of ${fmt(totalContrib)} total</div></div>
+    <div class="stat-card green"><div class="stat-label">Received from CBAP</div><div class="stat-value">${fmt(totalReceived)}</div><div class="stat-sub">${returns.length} deposit${returns.length===1?'':'s'} on record</div></div>
+    <div class="stat-card ${outstanding>0?'red':'navy'}"><div class="stat-label">${outstanding>0?'Outstanding':'Fully Settled'}</div><div class="stat-value">${fmt(Math.abs(outstanding))}</div><div class="stat-sub">${outstanding>0?'CMF 30% not yet received from CBAP':'All CMF 30% returns accounted ✔'}</div></div>
+    <div class="stat-card" style="border-left-color:#7c3aed;"><div class="stat-label">Forwarded Balance</div><div class="stat-value">${fmt(FORWARDED_BALANCE.amount)}</div><div class="stat-sub">${fmtDate(FORWARDED_BALANCE.date)} · from prev. treasurer</div></div>
+  `;
+
+  renderReturnsTable();
+  renderReturnsSummary();
+  renderForwardedBalance();
+}
+
+function renderReturnsTable(){
+  const yr=document.getElementById('ret-year-filter').value;
+  let returns=loadReturns();
+  if(yr!=='all') returns=returns.filter(r=>r.year===yr);
+
+  const tbody=returns.length?returns.map(r=>{ const isHist=typeof r.id==='string'&&r.id.startsWith('hr'); return `<tr>
+    <td style="white-space:nowrap;">${r.date?fmtDate(r.date):r.year+' '+r.month}</td>
+    <td class="num" style="color:#16a34a;font-weight:700;">${fmtN(r.amount)}</td>
+    <td style="font-size:11px;color:#6b7280;">${r.notes||'—'}</td>
+    <td style="font-size:11px;color:#6b7280;">${r.ref||'—'}</td>
+    <td style="font-size:11px;color:#6b7280;">${r.period||'—'}</td>
+    <td>${isHist?'<span style="font-size:10px;color:#9ca3af;">hist</span>':`<button class="btn btn-sm btn-danger" onclick="deleteReturn(${r.id})">✕</button>`}</td>
+  </tr>`; }).join(''):`<tr><td colspan="7" style="text-align:center;padding:24px;color:#9ca3af;">No return entries yet. Record your first CMF return from CBAP above.</td></tr>`;
+
+  document.getElementById('returns-table').innerHTML=`<table id='returns-table-inner'>
+    <thead><tr><th class='sortable' onclick="sortTable('returns-table-inner',0)">Date</th><th class='sortable' onclick="sortTable('returns-table-inner',1)">Type</th><th class='sortable' onclick="sortTable('returns-table-inner',2)">Amount (₱)</th><th class='sortable' onclick="sortTable('returns-table-inner',3)">Notes / Description</th><th class='sortable' onclick="sortTable('returns-table-inner',4)">Ref / OR No.</th><th></th></tr></thead>
+    <tbody>${tbody}</tbody></table>`;
+}
+
+function renderReturnsSummary(){
+  const returns=loadReturns();
+  const data=getAllData();
+  const years=['2021','2022','2023','2024','2025','2026'];
+
+  const rows=years.map(y=>{
+    const contrib=data.filter(d=>d.year===y).reduce((s,d)=>s+d.amount,0);
+    const expected30=contrib*CMF_RATE;
+    const received=returns.filter(r=>r.year===y).reduce((s,r)=>s+r.amount,0);
+    const balance=expected30-received;
+    const status=contrib===0?'<span class="badge badge-gray">No Data</span>':
+      balance<=0?'<span class="badge badge-remitted">✔ Settled</span>':
+      received===0?'<span class="badge badge-pending">⏳ Pending</span>':
+      '<span class="badge" style="background:#fef3c7;color:#92400e;">⚡ Partial</span>';
+    return `<tr>
+      <td><strong>${y}</strong></td>
+      <td class="num">${contrib>0?fmtN(contrib):'—'}</td>
+      <td class="num">${contrib>0?fmtN(expected30):'—'}</td>
+      <td class="num" style="color:#16a34a;">${received>0?fmtN(received):'—'}</td>
+      <td class="num" style="color:${balance>0?'#d97706':balance<0?'#2563eb':'#16a34a'};">${contrib>0?(balance!==0?fmtN(Math.abs(balance)):'—'):'—'}</td>
+      <td>${status}</td>
+    </tr>`;
+  }).join('');
+
+  const totalContrib=data.reduce((s,d)=>s+d.amount,0);
+  const totalExpected30=totalContrib*CMF_RATE;
+  const totalReceived=returns.reduce((s,r)=>s+r.amount,0);
+  const totalBalance=totalExpected30-totalReceived;
+
+  document.getElementById('returns-summary-table').innerHTML=`<table id='returns-summary-inner'>
+    <thead><tr><th class='sortable' onclick="sortTable('returns-summary-inner',0)">Year</th><th class='sortable' onclick="sortTable('returns-summary-inner',1)">Total Contributions</th><th class='sortable' onclick="sortTable('returns-summary-inner',2)">Expected 30%</th><th class='sortable' onclick="sortTable('returns-summary-inner',3)">Received from CBAP</th><th class='sortable' onclick="sortTable('returns-summary-inner',4)">Balance</th><th class='sortable' onclick="sortTable('returns-summary-inner',5)">Status</th></tr></thead>
+    <tbody>${rows}</tbody>
+    <tfoot><tr>
+      <td class="total-row"><strong>TOTAL</strong></td>
+      <td class="num total-row"><strong>${fmtN(totalContrib)}</strong></td>
+      <td class="num total-row"><strong>${fmtN(totalExpected30)}</strong></td>
+      <td class="num total-row" style="color:#16a34a;"><strong>${fmtN(totalReceived)}</strong></td>
+      <td class="num total-row" style="color:${totalBalance>0?'#d97706':'#16a34a'};"><strong>${fmtN(Math.abs(totalBalance))}</strong></td>
+      <td class="total-row"><strong>${totalBalance<=0?'✔ Settled':'⏳ '+fmt(totalBalance)+' pending'}</strong></td>
+    </tr></tfoot></table>`;
+}
+
+function renderForwardedBalance(){
+  const fwd=FORWARDED_BALANCE;
+  const el=document.getElementById('fwd-balance-panel');
+  if(!el) return;
+  el.innerHTML=`
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+      <div style="flex:1;">
+        <div style="font-size:11px;font-weight:700;color:#7c3aed;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Forwarded Cash Balance</div>
+        <div style="font-size:13px;color:#4b5563;">${fmtDate(fwd.date)} — ${fwd.notes}</div>
+      </div>
+      <div style="font-size:22px;font-weight:800;color:#7c3aed;">${fmt(fwd.amount)}</div>
+    </div>`;
+}
+
+function exportReturnsCSV(){
+  const yr=document.getElementById('ret-year-filter')?document.getElementById('ret-year-filter').value:'all';
+  let returns=loadReturns();
+  if(yr&&yr!=='all') returns=returns.filter(r=>r.year===yr);
+  // Sort ascending by date for ledger readability
+  const sorted=[FORWARDED_BALANCE,...returns].sort((a,b)=>a.date<b.date?-1:1);
+  const header='Date,Year,Month,Amount,Type,CMF Period,Notes\n';
+  const rows=sorted.map(r=>{
+    const amt=typeof r.amount==='number'?r.amount.toFixed(2):parseFloat(r.amount||0).toFixed(2);
+    return `${r.date||''},${r.year},${r.month||''},${amt},${r.id==='fwd'?'Forwarded Balance':'CMF 30% from CBAP'},"${r.period||''}","${r.notes||''}"`;
+  }).join('\n');
+  const blob=new Blob([header+rows],{type:'text/csv'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download=`QueMar_CMF_Returns_${yr}.csv`; a.click();
+  toast('Returns exported!');
+}
+
+
+
+// ── QUEMAR FUND CASHFLOW DATA ─────────────────────────────────
+const CASHFLOW = [
+  // ── REPORT 1: Nov 2021 – Jun 2023 ────────────────────────────
+  {date:'2021-11-01',desc:'Forwarded cash (opening balance)',amount:59573.75,type:'in',cat:'General Fund'},
+  {date:'2021-12-14',desc:'Benevolence for Ptr. Dapol',amount:-5000,type:'out',cat:'Benevolence Fund'},
+  {date:'2022-01-01',desc:'Benevolence for Ptr. Diwata',amount:-5000,type:'out',cat:'Benevolence Fund'},
+  {date:'2022-01-16',desc:'Medical Assistance for Ptr. Diwata',amount:-2000,type:'out',cat:'Benevolence Fund'},
+  {date:'2022-02-16',desc:'Medical Assistance for Ptr. Greg Manzano',amount:-2000,type:'out',cat:'Benevolence Fund'},
+  {date:'2022-05-21',desc:'iLead Training – Ptr. Arnel honorarium',amount:-5000,type:'out',cat:'Operating Expenses'},
+  {date:'2022-07-02',desc:'iLead Training',amount:-4000,type:'out',cat:'Training & Seminars'},
+  {date:'2022-11-07',desc:"Pastor's Conference (Nagcarlan, Laguna)",amount:-12000,type:'out',cat:'Training & Seminars'},
+  {date:'2023-01-16',desc:"Pastor's Meeting/Fellowship (McDo Tayabas)",amount:-1403.86,type:'out',cat:'Church Development'},
+  {date:'2023-02-13',desc:'Financial assistance for Ptr. Mhar Constantino family',amount:-5000,type:'out',cat:'Benevolence Fund'},
+  {date:'2023-05-08',desc:'Cash deposit from CBAP (CMF 30%)',amount:23982.05,type:'in',cat:'General Fund'},
+  {date:'2023-05-14',desc:"Pastor's Meeting/Fellowship (McDo Tayabas)",amount:-840,type:'out',cat:'Church Development'},
+  {date:'2023-06-09',desc:'Cash deposit from CBAP (CMF 30%)',amount:22185.50,type:'in',cat:'General Fund'},
+  // ── REPORT 2: Jul 2023 – Jul 2025 ────────────────────────────
+  {date:'2023-07-15',desc:'Financial assistance for Ptr. Lito Ranillo family',amount:-2000,type:'out',cat:'Benevolence Fund'},
+  {date:'2023-07-31',desc:'Cellphone load',amount:-350,type:'out',cat:'Operating Expenses'},
+  {date:'2023-11-27',desc:'Financial assistance for CBAP Biennial Conference',amount:-15000,type:'out',cat:'Training & Seminars'},
+  {date:'2024-01-12',desc:'Cash deposit from CBAP (CMF 30%)',amount:19559.69,type:'in',cat:'General Fund'},
+  {date:'2024-01-16',desc:'Financial assistance for Ptr. Greg Manzano',amount:-2000,type:'out',cat:'Benevolence Fund'},
+  {date:'2024-02-05',desc:'National Council Meeting Feb 6–8 at CCT MAKILING',amount:-2099,type:'out',cat:'Training & Seminars'},
+  {date:'2024-02-08',desc:'Marinduque Churches Visit – Pastor Manny and Pastor Ronald',amount:-9817,type:'out',cat:'Church Development'},
+  {date:'2024-02-27',desc:'Guitar for Marinduque outreach c/o Ptr. Edison',amount:-5000,type:'out',cat:'Church Planting'},
+  {date:'2024-03-01',desc:'Cash deposit from CBAP (CMF 30%)',amount:2139.50,type:'in',cat:'General Fund'},
+  {date:'2024-05-28',desc:'Cash deposit from CBAP (CMF 30%)',amount:5052.70,type:'in',cat:'General Fund'},
+  {date:'2024-07-19',desc:'Cash deposit from CBAP (CMF 30%)',amount:2009.50,type:'in',cat:'General Fund'},
+  {date:'2024-08-10',desc:'A Certain Kind Leadership Training',amount:-15000,type:'out',cat:'Training & Seminars'},
+  {date:'2024-08-10',desc:"CBAP Pastors' Conference – Makiling",amount:-4500,type:'out',cat:'Training & Seminars'},
+  {date:'2024-09-23',desc:'Cash deposit from CBAP (CMF 30%)',amount:3711.83,type:'in',cat:'General Fund'},
+  {date:'2024-10-10',desc:'Cash deposit from CBAP (CMF 30%)',amount:7296.94,type:'in',cat:'General Fund'},
+  {date:'2024-10-22',desc:'Planning Budgeting for 2025',amount:-10000,type:'out',cat:'Operating Expenses'},
+  {date:'2024-11-21',desc:'Financial assistance for Ptr. Luis family',amount:-7000,type:'out',cat:'Benevolence Fund'},
+  {date:'2024-11-25',desc:"Pastor's Overnight Meeting/Fellowship (Mamala)",amount:-1000,type:'out',cat:'Operating Expenses'},
+  {date:'2025-01-06',desc:'Meeting with CB Directors (Cafe Local)',amount:-3000,type:'out',cat:'Church Development'},
+  {date:'2025-01-15',desc:'Cash deposit from CBAP (CMF 30%)',amount:8228,type:'in',cat:'General Fund'},
+  {date:'2025-02-11',desc:'Cash deposit from CBAP (CMF 30%)',amount:5468,type:'in',cat:'General Fund'},
+  {date:'2025-04-13',desc:'Quemar Election & CBAP By-Laws Consultation (food, etc)',amount:-5000,type:'out',cat:'Operating Expenses'},
+  {date:'2025-04-14',desc:'Cash deposit from CBAP (CMF 30%)',amount:4681,type:'in',cat:'General Fund'},
+  {date:'2025-05-26',desc:'Quemar Election & CBAP By-Laws Consultation (PJoel LG)',amount:-2000,type:'out',cat:'Operating Expenses'},
+  {date:'2025-06-04',desc:'Cash deposit from CBAP (CMF 30%)',amount:3844,type:'in',cat:'General Fund'},
+  {date:'2025-06-16',desc:'Quemar Election & CBAP By-Laws Consultation (election materials)',amount:-327,type:'out',cat:'Operating Expenses'},
+  // ── REPORT 3: Jul 2025 – present ─────────────────────────────
+  {date:'2025-06-21',desc:'QueMar Officers transition meeting snacks',amount:-1322.20,type:'out',cat:'Operating Expenses'},
+  {date:'2025-08-02',desc:'QueMar Treasurer Mobile Phone',amount:-5999,type:'out',cat:'Operating Expenses'},
+  {date:'2025-08-02',desc:'CBAP Biennial coffee table sponsorship',amount:-6000,type:'out',cat:'General Fund'},
+  {date:'2025-09-25',desc:'Representation, Officers Meeting (snack, McDo Isabang)',amount:-856,type:'out',cat:'Operating Expenses'},
+  {date:'2025-11-08',desc:'QueMar Council Christmas Fellowship',amount:-5000,type:'out',cat:'Operating Expenses'},
+  {date:'2025-11-13',desc:'Cash deposit from CBAP (CMF 30%)',amount:3900,type:'in',cat:'General Fund'},
+  {date:'2025-11-30',desc:'Council Planning Budgeting for 2026',amount:-6200,type:'out',cat:'General Fund'},
+  {date:'2026-01-07',desc:'IDMC Training representation',amount:-500,type:'out',cat:'Training & Seminars'},
+  {date:'2026-01-30',desc:'IDMC Training honorarium Dr. Avante',amount:-3000,type:'out',cat:'Training & Seminars'},
+  {date:'2026-01-30',desc:'KALINGA registration x19',amount:-3800,type:'out',cat:'Benevolence Fund'},
+  {date:'2026-02-01',desc:'NC meeting transportation allowance PJoel R.',amount:-1000,type:'out',cat:'General Fund'},
+  {date:'2026-02-02',desc:'Financial assistance for Ptr. Marlon Constantino',amount:-2000,type:'out',cat:'Benevolence Fund'},
+  {date:'2026-02-08',desc:'Financial assistance for Ptr. Marlon Constantino',amount:-4000,type:'out',cat:'Benevolence Fund'},
+  {date:'2026-04-23',desc:'QueMar Youth Fellowship',amount:-5000,type:'out',cat:'Church Development'},
+];
+
+// ── CASHFLOW ──────────────────────────────────────────────────
+const CAT_COLORS = {
+  'General Fund':       '#7c3aed',
+  'Church Planting':    '#dc2626',
+  'Church Development': '#2563eb',
+  'Training & Seminars':'#0891b2',
+  'Transformation':     '#d97706',
+  'Benevolence Fund':   '#16a34a',
+  'Scholarship Fund':   '#f59e0b',
+  'Operating Expenses': '#9ca3af',
+};
+
+
+
+
+function renderCashflowPage(){
+  const all=getAllCashflow();
+  const outs=all.filter(e=>e.amount<0);
+  const ins=all.filter(e=>e.amount>0);
+  const balance=all.reduce((s,e)=>s+e.amount,0);
+  const totalIn=ins.reduce((s,e)=>s+e.amount,0);
+  const totalOut=Math.abs(outs.reduce((s,e)=>s+e.amount,0));
+
+  // Category totals
+  const catTotals={};
+  outs.forEach(e=>{catTotals[e.cat]=(catTotals[e.cat]||0)+Math.abs(e.amount);});
+  const sortedCats=Object.entries(catTotals).sort((a,b)=>b[1]-a[1]);
+
+  // Top 4 stat cards: balance + top 3 spending categories
+  const catCards=sortedCats.slice(0,3).map(([cat,val])=>{
+    const col=CAT_COLORS[cat]||'#9ca3af';
+    const pct=((val/totalOut)*100).toFixed(0);
+    return `<div class="stat-card" style="border-left-color:${col};">
+      <div class="stat-label">${cat}</div>
+      <div class="stat-value" style="font-size:20px;">${fmt(val)}</div>
+      <div class="stat-sub">${pct}% of outflows · ${outs.filter(e=>e.cat===cat).length} transactions</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('cf-stat-grid').innerHTML=`
+    <div class="stat-card ${balance>=0?'green':'red'}">
+      <div class="stat-label">Current Balance</div>
+      <div class="stat-value">${fmt(balance)}</div>
+      <div class="stat-sub">${fmt(totalIn)} in · ${fmt(totalOut)} out</div>
+    </div>
+    ${catCards}
+  `;
+
+  renderCashflowCatBars();
+  renderCashflowDonut();
+  renderCashflowCatTable();
+  renderCashflowStackedBar();
+  renderCashflowTable();
+
+  const g=document.getElementById('cf-top-grid');
+  if(g) g.style.gridTemplateColumns=window.innerWidth<700?'1fr':'1fr 1fr';
+}
+
+function renderCashflowCatBars(){
+  const all=getAllCashflow().filter(e=>e.amount<0);
+  const catTotals={};
+  all.forEach(e=>{catTotals[e.cat]=(catTotals[e.cat]||0)+Math.abs(e.amount);});
+  const sorted=Object.entries(catTotals).sort((a,b)=>b[1]-a[1]);
+  const maxVal=sorted[0]?.[1]||1;
+  const grandTotal=sorted.reduce((s,[,v])=>s+v,0)||1;
+
+  document.getElementById('cf-cat-bars').innerHTML=sorted.map(([cat,val])=>{
+    const pct=((val/grandTotal)*100).toFixed(1);
+    const barW=Math.round((val/maxVal)*100);
+    const col=CAT_COLORS[cat]||'#9ca3af';
+    return `<div style="margin-bottom:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+        <div style="display:flex;align-items:center;gap:7px;">
+          <div style="width:10px;height:10px;border-radius:50%;background:${col};flex-shrink:0;"></div>
+          <span style="font-size:12px;font-weight:600;color:var(--gray-800);">${cat}</span>
+        </div>
+        <div style="text-align:right;">
+          <span style="font-size:12px;font-weight:700;color:var(--gray-800);">${fmt(val)}</span>
+          <span style="font-size:10px;color:var(--gray-400);margin-left:6px;">${pct}%</span>
+        </div>
+      </div>
+      <div style="height:8px;background:var(--gray-100);border-radius:4px;overflow:hidden;">
+        <div style="height:100%;width:${barW}%;background:${col};border-radius:4px;transition:.4s;"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderCashflowDonut(){
+  const all=getAllCashflow().filter(e=>e.amount<0);
+  const catTotals={};
+  all.forEach(e=>{catTotals[e.cat]=(catTotals[e.cat]||0)+Math.abs(e.amount);});
+  const sorted=Object.entries(catTotals).sort((a,b)=>b[1]-a[1]);
+  const total=sorted.reduce((s,[,v])=>s+v,0)||1;
+  const cx=75,cy=75,r=58,ri=36;
+  let angle=-Math.PI/2,paths='';
+  sorted.forEach(([cat,val])=>{
+    const sweep=(val/total)*2*Math.PI;
+    const x1=cx+r*Math.cos(angle),y1=cy+r*Math.sin(angle);
+    const x2=cx+r*Math.cos(angle+sweep),y2=cy+r*Math.sin(angle+sweep);
+    const xi1=cx+ri*Math.cos(angle),yi1=cy+ri*Math.sin(angle);
+    const xi2=cx+ri*Math.cos(angle+sweep),yi2=cy+ri*Math.sin(angle+sweep);
+    const large=sweep>Math.PI?1:0;
+    const col=CAT_COLORS[cat]||'#9ca3af';
+    paths+=`<path d="M${x1} ${y1} A${r} ${r} 0 ${large} 1 ${x2} ${y2} L${xi2} ${yi2} A${ri} ${ri} 0 ${large} 0 ${xi1} ${yi1} Z" fill="${col}" opacity=".9"><title>${cat}: ${fmt(val)}</title></path>`;
+    angle+=sweep;
+  });
+  paths+=`<text x="75" y="70" text-anchor="middle" font-size="9" fill="#9ca3af">Outflows</text>
+    <text x="75" y="83" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">${fmt(total)}</text>`;
+  document.getElementById('cf-donut-svg').innerHTML=paths;
+  document.getElementById('cf-donut-legend').innerHTML=sorted.map(([cat,val])=>`
+    <div class="legend-item">
+      <div class="legend-dot" style="background:${CAT_COLORS[cat]||'#9ca3af'}"></div>
+      <span class="legend-name" style="font-size:10px;">${cat}</span>
+      <span class="legend-val">${((val/total)*100).toFixed(1)}%</span>
+    </div>`).join('');
+}
+
+function renderCashflowCatTable(){
+  const all=getAllCashflow();
+  const cats=Object.keys(CAT_COLORS);
+  const totalOut=Math.abs(all.filter(e=>e.amount<0).reduce((s,e)=>s+e.amount,0))||1;
+
+  const rows=cats.map(cat=>{
+    const entries=all.filter(e=>e.cat===cat&&e.amount<0);
+    if(!entries.length) return '';
+    const total=entries.reduce((s,e)=>s+Math.abs(e.amount),0);
+    const pct=((total/totalOut)*100).toFixed(1);
+    const col=CAT_COLORS[cat]||'#9ca3af';
+    const barW=Math.round((total/totalOut)*100);
+    const count=entries.length;
+    const latest=entries.slice().sort((a,b)=>a.date>b.date?-1:1)[0];
+    return `<tr onclick="filterCashflowByCat('${cat}')" style="cursor:pointer;">
+      <td>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="width:10px;height:10px;border-radius:50%;background:${col};flex-shrink:0;"></div>
+          <strong>${cat}</strong>
+        </div>
+        <div class="progress-bar" style="margin-top:5px;"><div class="progress-fill" style="width:${barW}%;background:${col};"></div></div>
+      </td>
+      <td class="num" style="font-weight:700;">${fmt(total)}</td>
+      <td class="num"><span class="badge badge-gold">${pct}%</span></td>
+      <td class="num" style="color:var(--gray-500);">${count}</td>
+      <td style="font-size:11px;color:var(--gray-400);">${fmtDate(latest.date)}</td>
+    </tr>`;
+  }).filter(Boolean).join('');
+
+  const grandOut=Math.abs(all.filter(e=>e.amount<0).reduce((s,e)=>s+e.amount,0));
+  document.getElementById('cf-cat-table').innerHTML=`<table id="cf-cat-table-inner">
+    <thead><tr>
+      <th class="sortable" onclick="sortTable('cf-cat-table-inner',0)">Category</th>
+      <th class="sortable" onclick="sortTable('cf-cat-table-inner',1)">Total Spent</th>
+      <th class="sortable" onclick="sortTable('cf-cat-table-inner',2)">% Share</th>
+      <th class="sortable" onclick="sortTable('cf-cat-table-inner',3)">Transactions</th>
+      <th class="sortable" onclick="sortTable('cf-cat-table-inner',4)">Latest</th>
+    </tr></thead>
+    <tbody>${rows||'<tr><td colspan="5" style="text-align:center;padding:20px;color:#9ca3af;">No data.</td></tr>'}</tbody>
+    <tfoot><tr>
+      <td class="total-row"><strong>TOTAL OUTFLOWS</strong></td>
+      <td class="num total-row"><strong>${fmt(grandOut)}</strong></td>
+      <td class="num total-row"><strong>100%</strong></td>
+      <td class="num total-row"><strong>${all.filter(e=>e.amount<0).length}</strong></td>
+      <td class="total-row"></td>
+    </tr></tfoot>
+  </table>`;
+}
+
+function filterCashflowByCat(cat){
+  const sel=document.getElementById('cf-cat');
+  if(sel){ sel.value=cat; renderCashflowTable(); }
+  document.getElementById('cf-ledger-table')?.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function renderCashflowStackedBar(){
+  const all=getAllCashflow();
+  const years=['2021','2022','2023','2024','2025','2026'];
+  const cats=Object.keys(CAT_COLORS).filter(c=>all.some(e=>e.cat===c&&e.amount<0));
+
+  // Per year, per category totals
+  const data=years.map(y=>{
+    const out=all.filter(e=>e.date.startsWith(y)&&e.amount<0);
+    const catVals={};
+    cats.forEach(c=>{catVals[c]=out.filter(e=>e.cat===c).reduce((s,e)=>s+Math.abs(e.amount),0);});
+    const totalY=out.reduce((s,e)=>s+Math.abs(e.amount),0);
+    const totalIn=all.filter(e=>e.date.startsWith(y)&&e.amount>0).reduce((s,e)=>s+e.amount,0);
+    return {y, catVals, totalY, totalIn};
+  }).filter(d=>d.totalY>0||d.totalIn>0);
+
+  const maxVal=Math.max(...data.map(d=>Math.max(d.totalY,d.totalIn)))||1;
+  const H=160;
+
+  const bars=data.map(d=>{
+    // Stacked segment bar for outflows
+    let segments='', cumH=0;
+    cats.slice().reverse().forEach(cat=>{
+      const val=d.catVals[cat]||0;
+      if(!val) return;
+      const h=Math.round((val/maxVal)*H);
+      const col=CAT_COLORS[cat]||'#9ca3af';
+      segments+=`<div title="${cat}: ${fmt(val)}" style="width:100%;height:${h}px;background:${col};opacity:.85;"></div>`;
+      cumH+=h;
+    });
+    const hIn=Math.round((d.totalIn/maxVal)*H);
+    const net=d.totalIn-d.totalY;
+    return `<div class="bar-group" style="flex:1;">
+      <div style="display:flex;gap:3px;align-items:flex-end;height:${H}px;">
+        <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;height:${H}px;">
+          ${segments}
+        </div>
+        <div style="flex:1;background:#16a34a;opacity:.7;border-radius:3px 3px 0 0;height:${hIn}px;min-height:${hIn?2:0}px;" title="Inflow ${d.y}: ${fmt(d.totalIn)}"></div>
+      </div>
+      <div class="bar-label">${d.y}</div>
+      <div style="font-size:9px;text-align:center;color:${net>=0?'#16a34a':'#dc2626'};font-weight:700;">${net>=0?'+':''}${(net/1000).toFixed(1)}k</div>
+    </div>`;
+  }).join('');
+
+  // Legend
+  const legend=cats.map(c=>`<span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;color:#6b7280;margin-right:10px;"><span style="width:8px;height:8px;border-radius:50%;background:${CAT_COLORS[c]};display:inline-block;"></span>${c}</span>`).join('')
+    +`<span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;color:#6b7280;margin-right:10px;"><span style="width:8px;height:8px;border-radius:2px;background:#16a34a;opacity:.7;display:inline-block;"></span>Inflow</span>`;
+
+  document.getElementById('cf-bar-chart').innerHTML=`
+    <div style="display:flex;align-items:flex-end;gap:6px;height:${H}px;padding-bottom:0px;">${bars}</div>
+    <div style="margin-top:10px;flex-wrap:wrap;display:flex;">${legend}</div>`;
+}
+
+
+function renderCashflowTable(){
+  const yr=document.getElementById('cf-yr').value;
+  const type=document.getElementById('cf-type').value;
+  const cat=document.getElementById('cf-cat').value;
+  const fullSorted=getAllCashflow();
+  // Pre-compute running balances for all entries in chronological order
+  let runBal=0;
+  const withBal=fullSorted.map(e=>{ runBal+=e.amount; return {...e,_bal:runBal}; });
+  let filtered=withBal;
+  if(yr!=='all') filtered=filtered.filter(e=>e.date.startsWith(yr));
+  if(type==='in') filtered=filtered.filter(e=>e.amount>0);
+  if(type==='out') filtered=filtered.filter(e=>e.amount<0);
+  if(cat!=='all') filtered=filtered.filter(e=>e.cat===cat);
+
+  const rows=filtered.map(e=>{
+    const isIn=e.amount>0;
+    const col=CAT_COLORS[e.cat]||'#9ca3af';
+    const entryId=e.id||e._id||'';
+    const isHist=CASHFLOW.some(c=>c.date===e.date&&c.desc===e.desc&&Math.abs(c.amount-e.amount)<0.01);
+    const isUser=!isHist&&!!entryId;
+    const desc=e.desc||e.description||'';
+    return `<tr>
+      <td style="white-space:nowrap;font-size:11px;">${fmtDate(e.date)}</td>
+      <td style="max-width:280px;white-space:normal;font-size:12px;">${desc}${isUser?' <span class="badge badge-blue" style="font-size:9px;">new</span>':''}</td>
+      <td><span class="badge" style="background:${col}22;color:${col};font-size:9px;">${e.cat}</span></td>
+      <td class="num" style="color:#16a34a;font-weight:600;">${isIn?fmtN(e.amount):'—'}</td>
+      <td class="num" style="color:#dc2626;font-weight:600;">${!isIn?'('+fmtN(Math.abs(e.amount))+')':'—'}</td>
+      <td class="num" style="font-weight:700;color:${e._bal>=0?'#1a2744':'#dc2626'};">${fmt(e._bal)}</td>
+      ${isUser?`<td><button class="btn btn-sm btn-danger" onclick="deleteCashflowEntry('${entryId}')">✕</button></td>`:'<td></td>'}
+    </tr>`;
+  }).join('');
+
+  const totalIn=filtered.filter(e=>e.amount>0).reduce((s,e)=>s+e.amount,0);
+  const totalOut=Math.abs(filtered.filter(e=>e.amount<0).reduce((s,e)=>s+e.amount,0));
+  document.getElementById('cf-ledger-table').innerHTML=`<table id="cf-ledger-inner">
+    <thead><tr>
+      <th class="sortable" onclick="sortTable('cf-ledger-inner',0)">Date</th>
+      <th class="sortable" onclick="sortTable('cf-ledger-inner',1)">Description</th>
+      <th class="sortable" onclick="sortTable('cf-ledger-inner',2)">Category</th>
+      <th class="sortable" onclick="sortTable('cf-ledger-inner',3)">Inflow (₱)</th>
+      <th class="sortable" onclick="sortTable('cf-ledger-inner',4)">Outflow (₱)</th>
+      <th class="sortable" onclick="sortTable('cf-ledger-inner',5)">Balance</th>
+      <th></th>
+    </tr></thead>
+    <tbody>${rows||'<tr><td colspan="7" style="text-align:center;padding:20px;color:#9ca3af;">No transactions found.</td></tr>'}</tbody>
+    <tfoot><tr>
+      <td colspan="3" class="total-row"><strong>TOTAL</strong></td>
+      <td class="num total-row" style="color:#16a34a;"><strong>${fmtN(totalIn)}</strong></td>
+      <td class="num total-row" style="color:#dc2626;"><strong>(${fmtN(totalOut)})</strong></td>
+      <td class="num total-row" style="color:${totalIn-totalOut>=0?'#1a2744':'#dc2626'};"><strong>${fmt(totalIn-totalOut)}</strong></td>
+      <td class="total-row"></td>
+    </tr></tfoot>
+  </table>`;
+}
+
+function clearCashflowFilters(){
+  document.getElementById('cf-yr').value='all';
+  document.getElementById('cf-type').value='all';
+  document.getElementById('cf-cat').value='all';
+  renderCashflowTable();
+}
+
+async function addCashflowEntry(){
+  if(!isHosted){toast('Cannot save — open via a web server or Netlify.','error');return;}
+  const date=document.getElementById('cf-date').value;
+  const type=document.getElementById('cf-entry-type').value;
+  const amt=parseFloat(document.getElementById('cf-amount').value);
+  const cat=document.getElementById('cf-entry-cat').value;
+  const desc=document.getElementById('cf-desc').value.trim();
+  if(!date||!amt||amt<=0||!desc){toast('Fill in date, amount, and description.','error');return;}
+  const amount=type==='in'?amt:-amt;
+  try{
+    const [row]=await sb.post('qm_cashflow_entries',{date,type,amount,cat,description:desc});
+    row.desc=desc;
+    _userCashflow.push(row);
+    _userCashflow.sort((a,b)=>a.date>b.date?1:-1);
+    dbInvalidate('qm_cashflow_entries');
+    clearCashflowForm();
+    renderCashflowPage();
+    toast('Cashflow entry added.');
+  }catch(e){toast('Save failed: '+e.message,'error');}
+}
+
+async function deleteCashflowEntry(id){
+  if(!isHosted){toast('Cannot delete — open via a web server or Netlify.','error');return;}
+  if(!confirm('Delete this entry?')) return;
+  try{
+    await sb.delete('qm_cashflow_entries',id);
+    _userCashflow=_userCashflow.filter(e=>e.id!==id);
+    dbInvalidate('qm_cashflow_entries');
+    renderCashflowPage();
+    toast('Entry deleted.','error');
+  }catch(e){toast('Delete failed: '+e.message,'error');}
+}
+
+function clearCashflowForm(){
+  document.getElementById('cf-date').value='';
+  document.getElementById('cf-amount').value='';
+  document.getElementById('cf-desc').value='';
+}
+
+function updateCfAmountSign(){}
+
+function exportCashflowCSV(){
+  const yr=document.getElementById('cf-yr').value;
+  let all=getAllCashflow();
+  if(yr!=='all') all=all.filter(e=>e.date.startsWith(yr));
+  let running=0;
+  const fullSorted=getAllCashflow();
+  const header='Date,Description,Category,Inflow,Outflow,Balance\n';
+  const rows=all.map(e=>{
+    const idx=fullSorted.findIndex(f=>f.date===e.date&&f.desc===e.desc&&f.amount===e.amount);
+    let bal=0; for(let i=0;i<=idx;i++) bal+=fullSorted[i].amount;
+    const isIn=e.amount>0;
+    return `${e.date},"${e.desc}",${e.cat},${isIn?e.amount.toFixed(2):''},${!isIn?Math.abs(e.amount).toFixed(2):''},${bal.toFixed(2)}`;
+  }).join('\n');
+  const blob=new Blob([header+rows],{type:'text/csv'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download=`QueMar_Cashflow_${yr}.csv`; a.click();
+  toast('Cashflow exported!');
+}
+
+// ── TABLE SORT ────────────────────────────────────────────────
+let _sortState={};
+function sortTable(tableId, colIdx, type='auto'){
+  const table=document.getElementById(tableId);
+  if(!table) return;
+  const key=tableId+'-'+colIdx;
+  const prev=_sortState[key]||'none';
+  // Clear all sort indicators on this table
+  table.querySelectorAll('th').forEach(t=>t.classList.remove('sort-asc','sort-desc'));
+  const dir=prev==='asc'?'desc':'asc';
+  _sortState[key]=dir;
+  const th=table.querySelectorAll('thead th')[colIdx];
+  if(th){ th.classList.add(dir==='asc'?'sort-asc':'sort-desc'); }
+  // Collect tbody rows (exclude tfoot)
+  const tbody=table.querySelector('tbody');
+  if(!tbody) return;
+  const rows=Array.from(tbody.querySelectorAll('tr'));
+  rows.sort((a,b)=>{
+    const aCell=a.querySelectorAll('td')[colIdx];
+    const bCell=b.querySelectorAll('td')[colIdx];
+    if(!aCell||!bCell) return 0;
+    let aVal=aCell.textContent.trim();
+    let bVal=bCell.textContent.trim();
+    // Strip ₱ and commas for numeric detection
+    const aNum=parseFloat(aVal.replace(/[₱,%\s,]/g,'').replace(/[^0-9.-]/g,''));
+    const bNum=parseFloat(bVal.replace(/[₱,%\s,]/g,'').replace(/[^0-9.-]/g,''));
+    let cmp;
+    if(!isNaN(aNum)&&!isNaN(bNum)){
+      cmp=aNum-bNum;
+    } else {
+      // Try date parse
+      const aDate=new Date(aVal); const bDate=new Date(bVal);
+      if(!isNaN(aDate)&&!isNaN(bDate)) cmp=aDate-bDate;
+      else cmp=aVal.localeCompare(bVal,'en',{numeric:true});
+    }
+    return dir==='asc'?cmp:-cmp;
+  });
+  rows.forEach(r=>tbody.appendChild(r));
+}
+
+</script>
+</body>
+</html>
