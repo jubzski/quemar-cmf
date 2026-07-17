@@ -4,7 +4,7 @@
   "private": true,
   "description": "QueMar CMF Tracker — church view (mobile) and admin portal (desktop)",
   "scripts": {
-    "start": "serve -l $PORT ."
+    "start": "serve -l $PORT public"
   },
   "dependencies": {
     "serve": "^14.2.3"
