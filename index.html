@@ -1295,7 +1295,7 @@ function renderCashflowStackedBar(){
     const hIn=Math.round((d.totalIn/maxVal)*H);
     const net=d.totalIn-d.totalY;
     return `<div class="bar-group" style="flex:1;">
-      <div style="display:flex;gap:3px;align-items:flex-end;height:${H}px;">
+      <div style="width:100%;display:flex;gap:3px;align-items:flex-end;height:${H}px;">
         <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;height:${H}px;">
           ${segments}
         </div>
@@ -1310,9 +1310,10 @@ function renderCashflowStackedBar(){
   const legend=cats.map(c=>`<span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;color:#6b7280;margin-right:10px;"><span style="width:8px;height:8px;border-radius:50%;background:${CAT_COLORS[c]};display:inline-block;"></span>${c}</span>`).join('')
     +`<span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;color:#6b7280;margin-right:10px;"><span style="width:8px;height:8px;border-radius:2px;background:#16a34a;opacity:.7;display:inline-block;"></span>Inflow</span>`;
 
-  document.getElementById('cf-bar-chart').innerHTML=`
-    <div style="display:flex;align-items:flex-end;gap:6px;height:${H}px;padding-bottom:0px;">${bars}</div>
-    <div style="margin-top:10px;flex-wrap:wrap;display:flex;">${legend}</div>`;
+  document.getElementById('cf-bar-chart').innerHTML=`<div style="width:100%;">
+    <div style="width:100%;display:flex;align-items:flex-end;gap:6px;height:${H}px;padding-bottom:0px;">${bars}</div>
+    <div style="margin-top:10px;flex-wrap:wrap;display:flex;">${legend}</div>
+  </div>`;
 }
 
 
