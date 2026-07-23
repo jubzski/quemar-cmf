@@ -1082,7 +1082,7 @@ function renderReport(){
   }).join('');
 
   document.getElementById('report-table').innerHTML=`<table id='report-table-inner'>
-    <thead><tr><th class='sortable' onclick="sortTable('report-table-inner',0)">Year</th><th class='sortable' onclick="sortTable('report-table-inner',1)">Month</th><th class='sortable' onclick="sortTable('report-table-inner',2)">Total (₱)</th><th class='sortable' onclick="sortTable('report-table-inner',3)">CMF 30%</th><th class='sortable' onclick="sortTable('report-table-inner',4)">CMF 30%</th><th class='sortable' onclick="sortTable('report-table-inner',5)">Entries</th><th class='sortable' onclick="sortTable('report-table-inner',6)">Status</th></tr></thead>
+    <thead><tr><th class='sortable' onclick="sortTable('report-table-inner',0)">Year</th><th class='sortable' onclick="sortTable('report-table-inner',1)">Month</th><th class='sortable' onclick="sortTable('report-table-inner',2)">Total (₱)</th><th class='sortable' onclick="sortTable('report-table-inner',3)">CMF 30% (Expected)</th><th class='sortable' onclick="sortTable('report-table-inner',4)">CMF 30% (Sent)</th><th class='sortable' onclick="sortTable('report-table-inner',5)">Entries</th><th class='sortable' onclick="sortTable('report-table-inner',6)">Status</th></tr></thead>
     <tbody>${tbody||'<tr><td colspan="7" style="text-align:center;padding:20px;color:#9ca3af;">No data found.</td></tr>'}</tbody>
     <tfoot><tr>
       <td colspan="2" class="total-row"><strong>TOTAL</strong></td>
