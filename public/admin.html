@@ -821,6 +821,9 @@ th.sort-desc::after{content:' ↓';opacity:1;color:var(--gold2);}
 // ── CONSTANTS ──────────────────────────────────────────────
 const MONTHS=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
 const MONTH_FULL={JAN:'January',FEB:'February',MAR:'March',APR:'April',MAY:'May',JUN:'June',JUL:'July',AUG:'August',SEP:'September',OCT:'October',NOV:'November',DEC:'December'};
+const MONTH_NUM={JAN:'01',FEB:'02',MAR:'03',APR:'04',MAY:'05',JUN:'06',JUL:'07',AUG:'08',SEP:'09',OCT:'10',NOV:'11',DEC:'12'};
+// e.g. "03-March" — the numeric prefix makes month columns sort chronologically
+function monthLabel(m){ return (MONTH_NUM[m]?MONTH_NUM[m]+'-':'')+(MONTH_FULL[m]||m); }
 const CMF_RATE=0.30;
 
 // CMF 30% deposits received from CBAP
@@ -1236,7 +1239,7 @@ function renderDashboard(){
   // Recent 10 entries
   const recent=_userEntries.slice(0,10);
   const tbody=recent.length?recent.map(e=>`<tr>
-    <td>${e.year}</td><td>${MONTH_FULL[e.month]||e.month}</td><td>${e.church}</td>
+    <td>${e.year}</td><td>${monthLabel(e.month)}</td><td>${e.church}</td>
     <td class="num">${fmtN(e.amount)}</td>
     <td>${remitBadge(e.remitted)}</td>
     <td><button class="btn btn-sm btn-ghost" onclick="quickToggleRemit(${e.id})">Toggle</button></td>
@@ -1296,7 +1299,7 @@ function renderEntryTable(){
     const canEdit=!!userEntry;
     return `<tr>
       <td>${e.year}</td>
-      <td>${MONTH_FULL[e.month]||e.month}</td>
+      <td>${monthLabel(e.month)}</td>
       <td>${e.church}</td>
       <td class="num">${fmtN(e.amount)}</td>
       <td class="num" style="color:#16a34a;">${fmtN(e.amount*CMF_RATE)}</td>
@@ -1414,7 +1417,7 @@ function renderRemittanceTable(){
     totContrib+=r.total; totRemit+=r.remitted; totPend+=r.pending;
     const status=r.pending===0?'<span class="badge badge-remitted">✔ Sent</span>':r.remitted===0?'<span class="badge badge-pending">⏳ Pending</span>':'<span class="badge" style="background:#fef3c7;color:#92400e;">⚡ Partial</span>';
     return `<tr>
-      <td>${r.year}</td><td>${MONTH_FULL[r.month]||r.month}</td>
+      <td>${r.year}</td><td>${monthLabel(r.month)}</td>
       <td class="num">${fmtN(r.total)}</td>
       <td class="num">${fmtN(r.total)}</td>
       <td class="num" style="color:#16a34a;">${fmtN(r.remitted)}</td>
