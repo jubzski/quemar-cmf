@@ -1058,7 +1058,7 @@ function renderReport(){
   const grouped={};
   filtered.forEach(d=>{
     const k=d.year+'-'+d.month;
-    if(!grouped[k]) grouped[k]={year:d.year,month:d.month,total:0,remitted:1,count:0};
+    if(!grouped[k]) grouped[k]={year:d.year,month:d.month,total:0,remitted:0,count:0};
     grouped[k].total+=d.amount;
     if(d.remitted) grouped[k].remitted+=d.amount;
     grouped[k].count++;
