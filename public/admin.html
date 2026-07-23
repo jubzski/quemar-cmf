@@ -1212,8 +1212,8 @@ function renderDashboard(){
   const ytd=data.filter(d=>d.year==='2026').reduce((s,d)=>s+d.amount,0);
 
   document.getElementById('a-stat-grid').innerHTML=`
-    <div class="stat-card"><div class="stat-label">Grand Total</div><div class="stat-value">${fmt(total)}</div><div class="stat-sub">100% sent to CBAP</div></div>
-    <div class="stat-card blue"><div class="stat-label">Sent to CBAP</div><div class="stat-value">${fmt(total)}</div><div class="stat-sub">100% of contributions</div></div>
+    <div class="stat-card"><div class="stat-label">Grand Total</div><div class="stat-value">${fmt(total)}</div><div class="stat-sub">Total contributions</div></div>
+    <div class="stat-card blue"><div class="stat-label">Sent to CBAP</div><div class="stat-value">${fmt(remitted)}</div><div class="stat-sub">${pending>0?fmt(pending)+' not yet sent':'100% confirmed sent'}</div></div>
     <div class="stat-card green"><div class="stat-label">CMF 30% Received</div><div class="stat-value">${fmt(loadReturns().reduce((s,r)=>s+r.amount,0))}</div><div class="stat-sub">${loadReturns().length} deposits from CBAP</div></div>
     <div class="stat-card red"><div class="stat-label">CMF 30% Outstanding</div><div class="stat-value">${fmt(Math.max(0,total*CMF_RATE-loadReturns().reduce((s,r)=>s+r.amount,0)))}</div><div class="stat-sub">30% expected vs received</div></div>
   `;

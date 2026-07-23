@@ -862,7 +862,8 @@ function renderDashboard(){
   const years=['2021','2022','2023','2024','2025','2026'];
   const total=data.reduce((s,d)=>s+d.amount,0);
   const cmf=total*CMF_RATE;
-  const remitted=data.filter(d=>d.remitted).reduce((s,d)=>s+d.amount,0)*CMF_RATE;
+  const sentToCBAP=data.filter(d=>d.remitted).reduce((s,d)=>s+d.amount,0);
+  const remitted=sentToCBAP*CMF_RATE;
   const pending=data.filter(d=>!d.remitted).reduce((s,d)=>s+d.amount,0)*CMF_RATE;
   const ytd=data.filter(d=>d.year==='2026').reduce((s,d)=>s+d.amount,0);
 
@@ -870,12 +871,12 @@ function renderDashboard(){
   document.getElementById('hero-stats').innerHTML=`
     <div class="hero-stat"><div class="hero-stat-val">${getAllChurches().length}</div><div class="hero-stat-label">Churches</div></div>
     <div class="hero-stat"><div class="hero-stat-val">${fmt(total)}</div><div class="hero-stat-label">Total Contributed</div></div>
-    <div class="hero-stat"><div class="hero-stat-val">${fmt(total)}</div><div class="hero-stat-label">Sent to CBAP</div></div>
+    <div class="hero-stat"><div class="hero-stat-val">${fmt(sentToCBAP)}</div><div class="hero-stat-label">Sent to CBAP</div></div>
     <div class="hero-stat"><div class="hero-stat-val">${fmt(returnsTotal)}</div><div class="hero-stat-label">CMF 30% Received</div></div>
   `;
 
   document.getElementById('stat-grid').innerHTML=`
-    <div class="stat-card"><div class="stat-label">Grand Total</div><div class="stat-value">${fmt(total)}</div><div class="stat-sub">100% sent to CBAP</div></div>
+    <div class="stat-card"><div class="stat-label">Grand Total</div><div class="stat-value">${fmt(total)}</div><div class="stat-sub">Total contributions</div></div>
     <div class="stat-card blue"><div class="stat-label">CMF 30% Expected</div><div class="stat-value">${fmt(total*CMF_RATE)}</div><div class="stat-sub">30% of total contributions</div></div>
     <div class="stat-card green"><div class="stat-label">CMF 30% Received</div><div class="stat-value">${fmt(getReturnsTotal())}</div><div class="stat-sub">${getReturns().length} deposits from CBAP</div></div>
     <div class="stat-card navy"><div class="stat-label">2026 YTD</div><div class="stat-value">${fmt(ytd)}</div><div class="stat-sub">Current year contributions</div></div>
